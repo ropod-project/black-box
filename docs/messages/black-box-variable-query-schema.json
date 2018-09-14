@@ -1,0 +1,69 @@
+{
+  "id": "ropod-cmd-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title" : "Black Box Variable Query Schema",
+  "description": "Find the names of all variables logged on a given black box",
+  "type": "object",
+
+  "properties":
+  {
+    "header":
+    {
+      "allOf":
+      [
+        { "$ref": "ropod-msg-schema.json#/definitions/header" },
+        { "$ref": "#/definitions/header" }
+      ]
+    },
+
+    "payload":
+    {
+      "allOf":
+      [
+        { "$ref": "ropod-msg-schema.json#/definitions/payload" },
+        { "$ref": "#/definitions/bbVariableQueryPayload" }
+      ]
+    }
+  },
+
+  "required": [ "header", "payload" ],
+  "additionalProperties": true,
+
+  "definitions":
+  {
+    "header":
+    {
+      "type": "object",
+      "description": "More specific definition (than the definition of ropod-msg-schema.json). Only the type field is further specified.",
+      "properties":
+      {
+        "type": { "enum": [ "VARIABLE-QUERY" ] }
+      },
+      "required": [ "type"],
+      "additionalProperties": true
+    },
+
+    "bbVariableQueryPayload":
+    {
+      "type": "object",
+      "description": "Data associated with a black box variable query (e.g. who is requesting the data).",
+      "properties":
+      {
+        "senderId":   { "$ref": "#/definitions/senderId" },
+        "ropodId":   { "$ref": "#/definitions/ropodId" }
+      },
+      "required": [ "senderId", "ropodId" ],
+      "additionalProperties": false
+    },
+
+    "senderId":
+    {
+      "description": "ID uniquely specifying the client that requests black box varible names."
+    },
+
+    "ropodId":
+    {
+      "description": "ID of the ropod to which the queried black box is attached."
+    }
+  }
+}

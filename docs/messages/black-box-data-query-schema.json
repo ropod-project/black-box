@@ -1,0 +1,95 @@
+{
+  "id": "ropod-cmd-schema.json",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title" : "Black Box Data Query Schema",
+  "description": "Retrieve data from a set of variables logged on a black box in a given time interval",
+  "type": "object",
+
+  "properties":
+  {
+    "header":
+    {
+      "allOf":
+      [
+        { "$ref": "ropod-msg-schema.json#/definitions/header" },
+        { "$ref": "#/definitions/header" }
+      ]
+    },
+
+    "payload":
+    {
+      "allOf":
+      [
+        { "$ref": "ropod-msg-schema.json#/definitions/payload" },
+        { "$ref": "#/definitions/bbDataQueryPayload" }
+      ]
+    }
+  },
+
+  "required": [ "header", "payload" ],
+  "additionalProperties": true,
+
+  "definitions":
+  {
+    "header":
+    {
+      "type": "object",
+      "description": "More specific definition (than the definition of ropod-msg-schema.json). Only the type field is further specified.",
+      "properties":
+      {
+        "type": { "enum": [ "DATA-QUERY" ] }
+      },
+      "required": [ "type"],
+      "additionalProperties": true
+    },
+
+    "bbDataQueryPayload":
+    {
+      "type": "object",
+      "description": "Data associated with a black box data query (e.g. who is requesting the data, variables for which to retrieve data, and a time filter for the query).",
+      "properties":
+      {
+        "senderId":   { "$ref": "#/definitions/senderId" },
+        "ropodId":   { "$ref": "#/definitions/ropodId" },
+        "variables":   { "$ref": "#/definitions/variables" },
+        "startTime":   { "$ref": "#/definitions/startTime" },
+        "endTime":   { "$ref": "#/definitions/endTime" }
+      },
+      "required": [ "senderId", "ropodId", "variables", "startTime", "endTime" ],
+      "additionalProperties": false
+    },
+
+    "senderId":
+    {
+      "description": "ID uniquely specifying the client that requests black box data."
+    },
+
+    "ropodId":
+    {
+      "type": "string",
+      "description": "ID of the ropod to which the queried black box is attached."
+    },
+
+    "variables":
+    {
+      "type": "array",
+      "items":
+      {
+        "type": "string"
+      },
+      "description": "A list of variables names for which data should be retrieved."
+    },
+
+    "startTime":
+    {
+      "type": "number",
+      "description": "UNIX timestamp (in seconds) specifying the start time for the queried data."
+    },
+
+    "endTime":
+    {
+      "type": "number",
+      "description": "UNIX timestamp (in seconds) specifying the end time for the queried data."
+    }
+  }
+}
