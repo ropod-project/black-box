@@ -24,6 +24,7 @@ namespace readers
         {
             variable_name = variable_name.substr(1, variable_name.size()-1);
         }
+        std::replace(variable_name.begin(), variable_name.end(), '/', '_');
         return source_name + "_" + variable_name;
     }
 }

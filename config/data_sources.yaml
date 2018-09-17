@@ -55,7 +55,7 @@
         - topic:
             name: /sw_ethercat_parser/data
             type: ropod_ros_msgs/SmartWheelData
-            variable_names: [commands, sensors]
+            variable_names: [commands, sensors, working_count]
             max_frequency: 10
 - zmq:
     topics:
