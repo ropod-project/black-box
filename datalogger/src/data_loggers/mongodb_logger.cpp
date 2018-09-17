@@ -168,8 +168,16 @@ namespace loggers
                         data[variable] = std::vector<std::string>();
                     }
                     double timestamp = doc["timestamp"].get_double();
-                    double value = doc[var].get_double();
-                    data[variable].push_back("[" + std::to_string(timestamp) + ", " + std::to_string(value) + "]");
+                    std::string value;
+                    if (doc[var].type() == bsoncxx::type::k_int32)
+                    {
+                        value = std::to_string(doc[var].get_int32());
+                    }
+                    else if (doc[var].type() == bsoncxx::type::k_double)
+                    {
+                        value = std::to_string(doc[var].get_double());
+                    }
+                    data[variable].push_back("[" + std::to_string(timestamp) + ", " + value + "]");
                 }
             }
         }
