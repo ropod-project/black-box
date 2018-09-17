@@ -94,6 +94,7 @@ namespace ros_listeners
                     sensors.append(sens);
                 }
                 root[variable_names_[var_num++]] = sensors;
+                root[variable_names_[var_num++]] = swdata->working_count;
 
                 std::stringstream msg;
                 msg << root;
