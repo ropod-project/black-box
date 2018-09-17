@@ -30,7 +30,13 @@ int main(int argc, char *argv[])
     //group_names and variable_names respectively
     for (int i=0; i<config_params.ros.topics.size(); i++)
     {
-        std::string group_name = config::DataSourceNames::ROS + "_" + config_params.ros.topics[i].name;
+        std::string ros_topic_name = config_params.ros.topics[i].name;
+        if (ros_topic_name[0] == '/')
+        {
+            ros_topic_name = ros_topic_name.substr(1, ros_topic_name.size()-1);
+        }
+        std::replace(ros_topic_name.begin(), ros_topic_name.end(), '/', '_');
+        std::string group_name = config::DataSourceNames::ROS + "_" + ros_topic_name;
         group_names.push_back(group_name);
         variable_names[group_name] = config_params.ros.topics[i].variable_names;
     }
