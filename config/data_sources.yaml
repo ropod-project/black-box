@@ -4,6 +4,15 @@
     max_database_size: 102400
     # whether or not to create a new DB after max size is reached
     split_database: false
+- zyre:
+    name: black_box_001
+    groups:
+        - ROPOD
+    message_types:
+        - CMD
+        - plan
+        - progress
+        - RobotPose2D
 - ros:
     ros_master_uri: localhost
     topics:
@@ -66,15 +75,6 @@
             type: json
             variable_names: [source, user_role, message]
             max_frequency: 30
-- zyre:
-    name: black_box_0
-    groups:
-        - ROPOD
-    message_types:
-        - CMD
-        - plan
-        - progress
-        - RobotPose2D
 - ethercat:
     interfaces:
         - interface_specification:
