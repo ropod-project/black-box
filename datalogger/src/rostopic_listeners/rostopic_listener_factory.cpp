@@ -92,5 +92,11 @@ namespace ros_listeners
                         variable_names, max_frequency, data_logger));
             return listener;
         }
+        else if (topic_type == "geometry_msgs/WrenchStamped")
+        {
+            std::shared_ptr<WrenchStampedListener> listener(new WrenchStampedListener(topic_name, topic_type,
+                        variable_names, max_frequency, data_logger));
+            return listener;
+        }
     }
 }

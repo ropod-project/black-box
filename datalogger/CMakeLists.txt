@@ -100,6 +100,7 @@ add_library(datalogger
     src/rostopic_listeners/move_base_result_listener.cpp
     src/rostopic_listeners/pose_listener.cpp
     src/rostopic_listeners/pose_stamped_listener.cpp
+    src/rostopic_listeners/wrench_stamped_listener.cpp
     src/rostopic_listeners/pose_with_covariance_stamped_listener.cpp
     src/rostopic_listeners/imu_listener.cpp
     src/rostopic_listeners/joy_listener.cpp

@@ -8,6 +8,7 @@
 #include "datalogger/rostopic_listeners/path_listener.hpp"
 #include "datalogger/rostopic_listeners/pose_listener.hpp"
 #include "datalogger/rostopic_listeners/pose_stamped_listener.hpp"
+#include "datalogger/rostopic_listeners/wrench_stamped_listener.hpp"
 #include "datalogger/rostopic_listeners/pose_with_covariance_stamped_listener.hpp"
 #include "datalogger/rostopic_listeners/imu_listener.hpp"
 #include "datalogger/rostopic_listeners/joy_listener.hpp"
