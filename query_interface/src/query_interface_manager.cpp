@@ -67,14 +67,14 @@ namespace data_retrieval
             Json::Value response_msg;
             response_msg["header"] = getMessageHeader(message_type);
             response_msg["payload"]["metamodel"] = "ropod-query-schema.json";
-            response_msg["payload"]["senderId"] = sender_id;
+            response_msg["payload"]["receiverId"] = sender_id;
             utils::Zyre::shoutMessage(response_msg, this);
         }
         else if (message_type == "DATA_QUERY")
         {
             //we ignore requests that are not for this black box
-            std::string ropod_id = json_msg["payload"]["ropodId"].asString() + "_query_interface";
-            if (ropod_id != node_name_)
+            std::string query_interface_id = json_msg["payload"]["blackBoxId"].asString() + "_query_interface";
+            if (query_interface_id != node_name_)
             {
                 return;
             }
@@ -111,7 +111,7 @@ namespace data_retrieval
             Json::Value response_msg;
             response_msg["header"] = getMessageHeader(message_type);
             response_msg["payload"]["metamodel"] = "ropod-query-schema.json";
-            response_msg["payload"]["senderId"] = sender_id;
+            response_msg["payload"]["receiverId"] = sender_id;
 
             // the data list will be a list of dictionaries, where each key
             // corresponds to a variable name and the value corresponds to
@@ -150,8 +150,8 @@ namespace data_retrieval
         else if (message_type == "VARIABLE_QUERY")
         {
             //we ignore requests that are not for this black box
-            std::string ropod_id = json_msg["payload"]["ropodId"].asString() + "_query_interface";
-            if (ropod_id != node_name_)
+            std::string query_interface_id = json_msg["payload"]["blackBoxId"].asString() + "_query_interface";
+            if (query_interface_id != node_name_)
             {
                 return;
             }
@@ -166,7 +166,7 @@ namespace data_retrieval
             Json::Value response_msg;
             response_msg["header"] = getMessageHeader(message_type);
             response_msg["payload"]["metamodel"] = "ropod-query-schema.json";
-            response_msg["payload"]["senderId"] = sender_id;
+            response_msg["payload"]["receiverId"] = sender_id;
 
             Json::Value &source_variable_list = response_msg["payload"]["variableList"];
             for (auto source_var_names : source_variable_names)
