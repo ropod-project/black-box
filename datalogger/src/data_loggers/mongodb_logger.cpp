@@ -27,7 +27,6 @@ namespace loggers
         {
             db_name_ = db_name_prefix_;
         }
-        std::cout << "Writing to DB: " << db_name_ << std::endl;
     }
 
     /**

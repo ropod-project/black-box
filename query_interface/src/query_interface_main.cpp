@@ -98,19 +98,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    //we print the contents of group_names and variable_names for debugging purposes
-    for(unsigned int i=0; i<group_names.size(); i++)
-    {
-        std::string name = group_names[i];
-        std::vector<std::string> var_names = variable_names[name];
-        std::cout << name << ": ";
-        for (int j=0; j<var_names.size(); j++)
-        {
-            std::cout << var_names[j] << " ";
-        }
-        std::cout << std::endl;
-    }
-
     std::shared_ptr<loggers::DataLogger> logger =
         std::make_shared<loggers::MongodbLogger>(db_name, config_params.default_params.split_database,
                 config_params.default_params.max_database_size, group_names, variable_names);
@@ -120,6 +107,7 @@ int main(int argc, char *argv[])
                                                             config_params.zyre,
                                                             logger);
 
+    std::cout << "[" << config_params.zyre.node_name << "] Query interface initialised" << std::endl;
     signal(SIGINT, checkTermination);
     while (!terminate)
     {
