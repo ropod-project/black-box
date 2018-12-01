@@ -2,7 +2,7 @@
 
 namespace ros_listeners
 {
-    DoorListener::DoorListener(const std::string &topic_name, const std::string &topic_type, 
+    DoorListener::DoorListener(const std::string &topic_name, const std::string &topic_type,
             const std::vector<std::string> &variable_names, double max_frequency,
             std::shared_ptr<loggers::DataLogger> data_logger)
         : ROSTopicListenerBase(topic_name, topic_type, variable_names, max_frequency, data_logger) { }
@@ -23,8 +23,8 @@ namespace ros_listeners
             previous_msg_time_ = ros::Time::now();
             try
             {
-                boost::shared_ptr<ropod_ros_msgs::ropod_door_detection> door
-                    = msg->instantiate<ropod_ros_msgs::ropod_door_detection>();
+                boost::shared_ptr<ropod_ros_msgs::DoorDetection> door
+                    = msg->instantiate<ropod_ros_msgs::DoorDetection>();
 
                 Json::Value root;
                 std::vector<float> values;
@@ -41,7 +41,7 @@ namespace ros_listeners
             }
             catch (topic_tools::ShapeShifterException e)
             {
-                std::cerr << "Shape shifter exception for message type ropod_ros_msgs::ropod_door_detection" << std::endl;
+                std::cerr << "Shape shifter exception for message type ropod_ros_msgs::DoorDetection" << std::endl;
                 exit(0);
             }
         }

@@ -21,7 +21,17 @@ int main(int argc, char *argv[])
                                                    config::DataSourceNames::ETHERCAT,
                                                    config::DataSourceNames::ZYRE };
 
-    config::ConfigParams config_params = config::ConfigFileReader::load("../../config/data_sources.yaml");
+    if (argc < 2)
+    {
+        std::cout << "Usage: ./black_box_query_interface <absolute-path-to-black-box-config-file>";
+        return 0;
+    }
+
+    std::string black_box_config_file(argv[1]);
+
+    std::cout << "Reading black box configuration file " << black_box_config_file << std::endl;
+    config::ConfigParams config_params = config::ConfigFileReader::load(black_box_config_file);
+
     std::string db_name = "logs";
     std::vector<std::string> group_names;
     std::map<std::string, std::vector<std::string>> variable_names;

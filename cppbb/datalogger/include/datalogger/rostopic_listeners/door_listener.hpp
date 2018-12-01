@@ -2,7 +2,7 @@
 #define DOOR_LISTENER_HPP
 
 #include <ros/ros.h>
-#include <ropod_ros_msgs/ropod_door_detection.h>
+#include <ropod_ros_msgs/DoorDetection.h>
 
 #include "datalogger/rostopic_listeners/rostopic_listener_base.hpp"
 

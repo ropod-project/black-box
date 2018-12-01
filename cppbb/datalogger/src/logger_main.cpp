@@ -20,7 +20,18 @@ int main(int argc, char *argv[])
                                                    config::DataSourceNames::ETHERCAT,
                                                    config::DataSourceNames::ZYRE };
 
-    config::ConfigParams config_params = config::ConfigFileReader::load("../../config/data_sources.yaml");
+    if (argc < 2)
+    {
+        std::cout << "Usage: ./black_box_logger <absolute-path-to-black-box-config-file>";
+        return 0;
+    }
+
+    std::string black_box_config_file(argv[1]);
+
+    std::cout << "Reading black box configuration file " << black_box_config_file << std::endl;
+    config::ConfigParams config_params = config::ConfigFileReader::load(black_box_config_file);
+    std::cout << "[" << config_params.zyre.node_name << "] Configuring black box" << std::endl;
+
     std::string db_name_prefix = "logs";
     std::vector<std::string> group_names;
     std::map<std::string, std::vector<std::string>> variable_names;
@@ -125,6 +136,9 @@ int main(int argc, char *argv[])
     // }
     std::shared_ptr<readers::ZyreReader> zyre_reader =
     std::make_shared<readers::ZyreReader>(config_params.zyre, logger);
+
+    // this last output is before configuring the ROS topic reader because that one will block the execution
+    std::cout << "[" << config_params.zyre.node_name << "] Logger configured; ready to log data" << std::endl;
 
     readers::ROSTopicReader ros_topic_reader(argc, argv, "rostopic_reader",
                     config_params.ros, config_params.default_params.max_frequency, logger);
