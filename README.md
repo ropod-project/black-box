@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository is a collection of components for ROPOD's black box, which is a device that logs data from different data sources and exposes a query interface for the data.
+This repository is a collection of components for a robotic black box, which is a device that logs data from different data sources and exposes a query interface for the data.
 
 The black box has two major components:
 * `datalogger`: A set of interfaces for reading data from different data sources and logging those data.
@@ -74,7 +74,6 @@ In order to deal with data that come from different sources (e.g. ROS, EtherCAT,
 ### Query Interface
 
 Data from the black box can be retrieved through a Zyre-based query interface that listens to JSON-based messages. The following message types can be sent to the query interface:
-* name query: returns a list of black box Zyre nodes (schema defined in [docs/messages/black-box-name-query-schema.json](docs/messages/black-box-name-query-schema.json))
 * variable query: returns a list of all variables logged on a particular black box (schema defined in[docs/messages/black-box-variable-query-schema.json](docs/messages/black-box-variable-query-schema.json))
 * data query: returns data corresponding to a set of variables in a given time interval (schema defined in [docs/messages/black-box-data-query-schema.json](docs/messages/black-box-data-query-schema.json))
 
