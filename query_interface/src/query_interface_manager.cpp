@@ -167,8 +167,7 @@ namespace data_retrieval
             response_msg["header"] = getMessageHeader(message_type);
             response_msg["payload"]["metamodel"] = "ropod-query-schema.json";
             response_msg["payload"]["receiverId"] = sender_id;
-
-            Json::Value &source_variable_list = response_msg["payload"]["variableList"];
+            response_msg["payload"]["variableList"] = Json::Value();
             for (auto source_var_names : source_variable_names)
             {
                 Json::Value variable_list;
@@ -179,8 +178,7 @@ namespace data_retrieval
 
                 std::string source_name = source_var_names.first;
                 Json::Value source_vars;
-                source_vars[source_name] = variable_list;
-                source_variable_list.append(source_vars);
+                response_msg["payload"]["variableList"][source_name] = variable_list;
             }
 
             utils::Zyre::whisperMessage(response_msg, this, std::string(msg_params.peer));
