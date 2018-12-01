@@ -3,13 +3,12 @@ from __future__ import print_function
 import sys
 import pymongo as pm
 
-
 class BlackBoxORM(object):
     '''A module for generating Python structures from black box data
     stored in a MongoDB database.
 
-    Author -- Alex Mitrevski
-    Contact -- aleksandar.mitrevski@h-brs.de
+    @author Alex Mitrevski
+    @contact aleksandar.mitrevski@h-brs.de
 
     '''
     def __init__(self, db_name):
