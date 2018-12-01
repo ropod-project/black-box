@@ -116,7 +116,7 @@ namespace data_retrieval
             // the data list will be a list of dictionaries, where each key
             // corresponds to a variable name and the value corresponds to
             // a list of values for that variable in the desired time frame
-            Json::Value &data_list = response_msg["payload"]["dataList"];
+            response_msg["payload"]["dataList"] = Json::Value();
 
             for (auto interface : query_interfaces_)
             {
@@ -139,8 +139,7 @@ namespace data_retrieval
 
                         std::string var_name = variable_data.first;
                         Json::Value var_data;
-                        var_data[var_name] = variable_data_list;
-                        data_list.append(var_data);
+                        response_msg["payload"]["dataList"][var_name] = variable_data_list;
                     }
                 }
             }
