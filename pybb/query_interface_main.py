@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import sys
 import time
 import yaml
@@ -32,7 +32,7 @@ def get_config_params(config_file):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('Usage: query_interface_main.py <absolute-path-to-black-box-config-file>')
+        print('Usage: query_interface_main.py [absolute-path-to-black-box-config-file]')
     bb_config_file = sys.argv[1]
     config_params = get_config_params(bb_config_file)
     query_interface = BlackBoxQueryInterface(config_params.data_sources,
