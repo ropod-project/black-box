@@ -62,7 +62,7 @@ namespace data_retrieval
 
         std::string message_type = json_msg["header"]["type"].asString();
         std::string sender_id = json_msg["payload"]["senderId"].asString();
-        if (message_type == "NAME_QUERY")
+        if (message_type == "NAME-QUERY")
         {
             Json::Value response_msg;
             response_msg["header"] = getMessageHeader(message_type);
@@ -70,7 +70,7 @@ namespace data_retrieval
             response_msg["payload"]["receiverId"] = sender_id;
             utils::Zyre::shoutMessage(response_msg, this);
         }
-        else if (message_type == "DATA_QUERY")
+        else if (message_type == "DATA-QUERY")
         {
             //we ignore requests that are not for this black box
             std::string query_interface_id = json_msg["payload"]["blackBoxId"].asString() + "_query_interface";
@@ -116,7 +116,7 @@ namespace data_retrieval
             // the data list will be a list of dictionaries, where each key
             // corresponds to a variable name and the value corresponds to
             // a list of values for that variable in the desired time frame
-            Json::Value &data_list = response_msg["payload"]["dataList"];
+            response_msg["payload"]["dataList"] = Json::Value();
 
             for (auto interface : query_interfaces_)
             {
@@ -139,15 +139,14 @@ namespace data_retrieval
 
                         std::string var_name = variable_data.first;
                         Json::Value var_data;
-                        var_data[var_name] = variable_data_list;
-                        data_list.append(var_data);
+                        response_msg["payload"]["dataList"][var_name] = variable_data_list;
                     }
                 }
             }
 
             utils::Zyre::whisperMessage(response_msg, this, std::string(msg_params.peer));
         }
-        else if (message_type == "VARIABLE_QUERY")
+        else if (message_type == "VARIABLE-QUERY")
         {
             //we ignore requests that are not for this black box
             std::string query_interface_id = json_msg["payload"]["blackBoxId"].asString() + "_query_interface";
@@ -167,8 +166,7 @@ namespace data_retrieval
             response_msg["header"] = getMessageHeader(message_type);
             response_msg["payload"]["metamodel"] = "ropod-query-schema.json";
             response_msg["payload"]["receiverId"] = sender_id;
-
-            Json::Value &source_variable_list = response_msg["payload"]["variableList"];
+            response_msg["payload"]["variableList"] = Json::Value();
             for (auto source_var_names : source_variable_names)
             {
                 Json::Value variable_list;
@@ -179,8 +177,7 @@ namespace data_retrieval
 
                 std::string source_name = source_var_names.first;
                 Json::Value source_vars;
-                source_vars[source_name] = variable_list;
-                source_variable_list.append(source_vars);
+                response_msg["payload"]["variableList"][source_name] = variable_list;
             }
 
             utils::Zyre::whisperMessage(response_msg, this, std::string(msg_params.peer));

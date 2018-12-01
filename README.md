@@ -1,12 +1,15 @@
-# ROPOD Black Box
+# Black Box
 
 ## Introduction
 
-This repository is a collection of components for ROPOD's black box, which is a device that logs data from different data sources and exposes a query interface for the data.
+This repository is a collection of components for a robotic black box, which is a device that logs data from different data sources and exposes a query interface for the data.
 
-The black box has two major components:
-* `datalogger`: A set of interfaces for reading data from different data sources and logging those data.
-* `query_interface`: An interface for black box data retrieval.
+The black box has three major components:
+* `data logger`: A set of interfaces for reading data from different data sources and logging those data
+* `query_interface`: An interface for black box data retrieval
+* `black box ODM`: A component for creating data structures from the black box data, thereby simplifying the manipulation of data
+
+For efficiency reasons, the query interface is only provided in C++; the query interface is exposed in both Python and C++, while the ODM only in Python. Note: We develop and test under Python 3; there are no plans for backwards compatibility with Python 2.
 
 ## Black Box Design Principles
 
@@ -73,14 +76,14 @@ In order to deal with data that come from different sources (e.g. ROS, EtherCAT,
 
 ### Query Interface
 
-Data from the black box can be retrieved through a Zyre-based query interface that listens to JSON-based messages. The following message types can be sent to the query interface:
-* name query: returns a list of black box Zyre nodes (schema defined in [docs/messages/black-box-name-query-schema.json](docs/messages/black-box-name-query-schema.json))
-* variable query: returns a list of all variables logged on a particular black box (schema defined in[docs/messages/black-box-variable-query-schema.json](docs/messages/black-box-variable-query-schema.json))
+Data from the black box can be retrieved through a Zyre-based query interface that listens to JSON messages and responds back with JSON messages. The following message types can be sent to the query interface:
+* variable query: returns a list of all variables logged on a particular black box (schema defined in [docs/messages/black-box-variable-query-schema.json](docs/messages/black-box-variable-query-schema.json))
 * data query: returns data corresponding to a set of variables in a given time interval (schema defined in [docs/messages/black-box-data-query-schema.json](docs/messages/black-box-data-query-schema.json))
 
 ## Dependencies
 
-The black box components depend on the following packages:
+The C++ black box components depend on the following libraries:
+* [`ropod_common`](https://github.com/ropod-project/ropod_common)
 * `yaml-cpp`
 * Several ROS components: `roscpp`, `topic_tools`, `std_msgs`, `geometry_msgs`, `nav_msgs`, and `sensor_msgs`
 * `jsoncpp`
@@ -90,22 +93,27 @@ The black box components depend on the following packages:
 * `libtins`
 * `pthread`
 
-## Class diagrams
+The Python components depend on the following packages:
+* The [`Pyre base communicator`](https://github.com/ropod-project/ropod_common/tree/master/pyropod/ropod/pyre_communicator) in `ropod_common`
+* `PyYAML`
+* `pymongo`
+
+## Class diagrams (C++)
 
 A UML-like diagram of the major data logger components is given below; the diagram is not exactly UML because the boxes contain more casual versions of the actual class names.
 
 ![ROPOD data logger - UML diagram](docs/images/ropod_datalogger.png)
 
-## Compiling and Running
+## Compilation and Usage (C++)
 
 The two major black box components - the data logger and the query interface - are compiled separately.
 
-### datalogger
+### Data logger
 
 To compile the data logger, run the following commands:
 
 ```
-cd datalogger
+cd cppbb/datalogger
 mkdir build && cd build && cmake ..
 make
 ```
@@ -115,17 +123,17 @@ This will create one library - `libdatalogger.so` - and an executable `black_box
 To launch the data logger, run the command
 
 ```
-./black_box_logger
+./black_box_logger [absolute-path-to-black-box-config-file]
 ```
 
 inside the previously created `build` directory.
 
-### query_interface
+### Query interface
 
 To compile the query interface, run the following commands:
 
 ```
-cd query_interface
+cd cppbb/query_interface
 mkdir build && cd build && cmake ..
 make
 ```
@@ -135,7 +143,45 @@ This will create one library - `libdata_query_interface.so` - and an executable 
 To launch the component monitors, run the command
 
 ```
-./black_box_query_interface
+./black_box_query_interface [absolute-path-to-a-black-box-config-file]
 ```
 
 inside the previously created `build` directory.
+
+## Usage (Python)
+
+The black box functionalities are exposed through a `black_box` package that contains two subpackages - `query_interface` and `odm`. To install the package, run the command
+
+```
+python3 setup.py install
+```
+
+or, if only development setup is desired,
+
+```
+python3 setup.py develop
+```
+
+inside the `pybb` directory.
+
+Inside this same directory, there are two executable scripts for the query interface and the ODM.
+
+### Query interface
+
+To use the query interface, run
+
+```
+python3 query_interface_main.py [absolute-path-to-a-black-box-config-file]
+```
+
+inside the `pybb` directory.
+
+### ODM
+
+To use the ODM, run
+
+```
+python3 odm_main.py [black-box-database-name]
+```
+
+inside the `pybb` directory. This will create a set of scripts - one corresponding to each collection in the black box database - in the directory where the script was executed.
