@@ -62,7 +62,7 @@ namespace data_retrieval
 
         std::string message_type = json_msg["header"]["type"].asString();
         std::string sender_id = json_msg["payload"]["senderId"].asString();
-        if (message_type == "NAME_QUERY")
+        if (message_type == "NAME-QUERY")
         {
             Json::Value response_msg;
             response_msg["header"] = getMessageHeader(message_type);
@@ -70,7 +70,7 @@ namespace data_retrieval
             response_msg["payload"]["receiverId"] = sender_id;
             utils::Zyre::shoutMessage(response_msg, this);
         }
-        else if (message_type == "DATA_QUERY")
+        else if (message_type == "DATA-QUERY")
         {
             //we ignore requests that are not for this black box
             std::string query_interface_id = json_msg["payload"]["blackBoxId"].asString() + "_query_interface";
@@ -146,7 +146,7 @@ namespace data_retrieval
 
             utils::Zyre::whisperMessage(response_msg, this, std::string(msg_params.peer));
         }
-        else if (message_type == "VARIABLE_QUERY")
+        else if (message_type == "VARIABLE-QUERY")
         {
             //we ignore requests that are not for this black box
             std::string query_interface_id = json_msg["payload"]["blackBoxId"].asString() + "_query_interface";
