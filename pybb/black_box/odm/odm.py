@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import sys
 import pymongo as pm
 
 class BlackBoxODM(object):
@@ -34,6 +33,7 @@ class BlackBoxODM(object):
             pass
 
         for collection_name in collection_names:
+            print('Generating Python class from collection "{0}"'.format(collection_name))
             collection = self.__database[collection_name]
             doc = collection.find_one()
             class_name = ''.join([x.title() for x in collection_name.split('_')])
@@ -46,6 +46,7 @@ class BlackBoxODM(object):
                                               variable_dict, variable_mapping_dict,
                                               class_name, class_definitions)
             self.__generate_source_file(self.db_name, collection_name, class_definitions)
+            print('Script "{0}.py" generated'.format(collection_name))
 
     def __generate_variable_dicts(self, doc):
         '''Returns two nested dictionaries:
@@ -217,11 +218,3 @@ class BlackBoxODM(object):
 
         with open(collection_name + '.py', 'w') as source_file:
             source_file.write(script_source)
-
-
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print('Usage: python odm.py [db_name]')
-    db_name = sys.argv[1]
-    bb_odm = BlackBoxODM(db_name)
-    bb_odm.deserialize_logs()
