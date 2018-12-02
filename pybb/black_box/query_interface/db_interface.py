@@ -79,7 +79,8 @@ class DBInterface(object):
         where "variable_name" is as stored in the collection) and the value
         is a list string "[timestamp, value]", namely the latest value of the variable
         together with its timestamp (the list is a string to allow "value"
-        to be of different types)
+        to be of different types). If the given collection does not exist or
+        there are no documents in it, returns an empty dictionary.
 
         Keyword arguments:
         @param collection_name -- name corresponding to a collection from the log database
@@ -96,11 +97,12 @@ class DBInterface(object):
             full_var_name = '{0}/{1}'.format(collection_name, var_name)
             var_data[full_var_name] = None
 
-        for var_name in doc:
-            full_var_name = '{0}/{1}'.format(collection_name, var_name)
-            if full_var_name in var_data:
-                var_data[full_var_name] = '[{0}, {1}]'.format(doc['timestamp'],
-                                                              doc[var_name])
+        if doc:
+            for var_name in doc:
+                full_var_name = '{0}/{1}'.format(collection_name, var_name)
+                if full_var_name in var_data:
+                    var_data[full_var_name] = '[{0}, {1}]'.format(doc['timestamp'],
+                                                                  doc[var_name])
         return var_data
 
     def __get_variable_list(self, collection):
