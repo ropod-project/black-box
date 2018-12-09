@@ -10,7 +10,7 @@ The black box has two major components:
 
 Both the logger and the query interface are exposed in both Python and C++; the Python versions are however newer and generally more up-to-date than the C++ versions (the C++ version of the query interface is in particular outdated currently). Note: We develop and test under Python 3; there are no plans for backwards compatibility with Python 2.
 
-A collection of tools for working with data from the black box - aimed at offline data analysis - can be found in our separate [`black-box-tools`](https://github.com/ropod-project/black-box-tools) repository.
+A collection of tools for working with data from the black box - aimed at offline data analysis - can be found in our separate [`black-box-tools`](https://github.com/ropod-project/black-box-tools) repository. The `black_box_tools` Python package exposed there is also a dependency of the black box query interface.
 
 ## Black Box Design Principles
 
@@ -129,7 +129,7 @@ The C++ black box components depend on the following libraries:
 * `libtins`
 * `pthread`
 
-The Python components depend on the following packages:
+Both Python components (the logger and the query interface) depend on the following packages:
 * The [`Pyre base communicator`](https://github.com/ropod-project/ropod_common/tree/master/pyropod/ropod/pyre_communicator) in `ropod_common`
 * `PyYAML`
 * `pymongo`
@@ -137,6 +137,8 @@ The Python components depend on the following packages:
 The logger additionally depends on:
 * `rospy`
 * [`rospy_message_converter`](https://github.com/ropod-project/rospy_message_converter) (a slightly customised version so that it works with Python 3)
+
+On the other hand, the query interface depends on our [`black_box_tools`](https://github.com/ropod-project/black-box-tools) package.
 
 ## Usage (Python)
 
