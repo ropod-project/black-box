@@ -5,9 +5,8 @@
 
 #include "config/config_params.hpp"
 #include "datalogger/data_readers/data_reader.hpp"
+#include "datalogger/data_readers/generic_ros_topic_listener.hpp"
 #include "datalogger/data_loggers/data_logger.hpp"
-#include "datalogger/rostopic_listeners/rostopic_listener_factory.hpp"
-#include "datalogger/rostopic_listeners/rostopic_listener_base.hpp"
 
 namespace readers
 {
@@ -71,7 +70,7 @@ namespace readers
         std::string node_handle_name_;
         config::RosParams config_params_;
         double max_frequency_;
-        std::vector<std::shared_ptr<ros_listeners::ROSTopicListenerBase>> readers_;
+        std::vector<std::shared_ptr<GenericTopicListener>> readers_;
         std::shared_ptr<ros::NodeHandle> nh_;
     };
 }

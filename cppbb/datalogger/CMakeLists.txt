@@ -92,10 +92,8 @@ add_library(datalogger
     src/data_readers/zmq_reader.cpp
     src/data_readers/json_zmq_reader.cpp
     src/data_readers/rostopic_reader.cpp
+    src/data_readers/generic_ros_topic_listener.cpp
     src/data_readers/zyre_reader.cpp
-    src/rostopic_listeners/rostopic_listener_factory.cpp
-    src/rostopic_listeners/rostopic_listener_base.cpp
-    src/rostopic_listeners/generic_topic_listener.cpp
 )
 
 target_link_libraries(datalogger

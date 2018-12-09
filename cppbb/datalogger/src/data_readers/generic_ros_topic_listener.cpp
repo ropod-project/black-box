@@ -1,11 +1,15 @@
-#include "datalogger/rostopic_listeners/generic_topic_listener.hpp"
+#include "datalogger/data_readers/generic_ros_topic_listener.hpp"
 
-namespace ros_listeners
+namespace readers
 {
     GenericTopicListener::GenericTopicListener(const std::string &topic_name, const std::string &topic_type, int max_frequency, std::shared_ptr<loggers::DataLogger> data_logger)
-        : ROSTopicListenerBase(topic_name, topic_type, max_frequency, data_logger) { }
+        : topic_name_(topic_name), topic_type_(topic_type),
+          max_frequency_(max_frequency), data_tunnel_interface_(data_logger) { }
 
-    GenericTopicListener::~GenericTopicListener() { }
+    GenericTopicListener::~GenericTopicListener()
+    {
+        this->subscriber_->shutdown();
+    }
 
     void GenericTopicListener::createSubscriber(std::shared_ptr<ros::NodeHandle> nh)
     {
@@ -15,9 +19,19 @@ namespace ros_listeners
                         (topic_name_, 1, boost::bind(&GenericTopicListener::log, this, _1))));
     }
 
+    void GenericTopicListener::shutdownSubscriber()
+    {
+        this->subscriber_->shutdown();
+    }
+
+    void GenericTopicListener::resetSubscriber()
+    {
+        this->subscriber_.reset();
+    }
+
     void GenericTopicListener::log(const topic_tools::ShapeShifter::ConstPtr &msg)
     {
-        if (this->isTimeElapsed())
+        if (this->minTimeElapsed())
         {
             this->previous_msg_time_ = ros::Time::now();
             std::vector<float> values;
@@ -51,6 +65,27 @@ namespace ros_listeners
             data_tunnel_interface_.tunnelData(readers::DataReader::formatVariableName(config::DataSourceNames::ROS, topic_name_),
                                               json_document);
         }
+    }
+
+    double GenericTopicListener::getTimestamp()
+    {
+        auto now = std::chrono::system_clock::now();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count() / 1000.0;
+    }
+
+    double GenericTopicListener::getTimestamp(ros::Time time)
+    {
+        return (time.toSec());
+    }
+
+    bool GenericTopicListener::minTimeElapsed()
+    {
+        ros::Time now = ros::Time::now();
+        if (now - previous_msg_time_ > min_time_between_msgs_)
+        {
+            return true;
+        }
+        return false;
     }
 
     std::string GenericTopicListener::getJsonDocument(const RosIntrospection::FlatMessage& flat_container,
