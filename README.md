@@ -4,12 +4,11 @@
 
 This repository is a collection of components for a robotic black box, which is a device that logs data from different data sources and exposes a query interface for the data.
 
-The black box has three major components:
+The black box has two major components:
 * `data logger`: A set of interfaces for reading data from different data sources and logging those data
 * `query_interface`: An interface for black box data retrieval
-* `black box ODM`: A component for creating data structures from the black box data, thereby simplifying the manipulation of data
 
-For efficiency reasons, the query interface is only provided in C++; the query interface is exposed in both Python and C++, while the ODM only in Python. Note: We develop and test under Python 3; there are no plans for backwards compatibility with Python 2.
+Both the logger and the query interface are exposed in both Python and C++; the Python versions are generally more up-to-date than the C++ versions. Note: We develop and test under Python 3; there are no plans for backwards compatibility with Python 2.
 
 ## Black Box Design Principles
 
@@ -102,11 +101,53 @@ The Python components depend on the following packages:
 * `PyYAML`
 * `pymongo`
 
+The logger additionally depends on:
+* `rospy`
+* [`rospy_message_converter`](https://github.com/ropod-project/rospy_message_converter) (a slightly customised version so that it works with Python 3)
+
 ## Class diagrams (C++)
 
 A UML-like diagram of the major data logger components is given below; the diagram is not exactly UML because the boxes contain more casual versions of the actual class names.
 
 ![ROPOD data logger - UML diagram](docs/images/ropod_datalogger.png)
+
+## Usage (Python)
+
+The black box functionalities are exposed through a `black_box` package that contains two subpackages - `datalogger` and `query interface`. To install the package, run the command
+
+```
+python3 setup.py install
+```
+
+or, if only development setup is desired,
+
+```
+python3 setup.py develop
+```
+
+inside the `pybb` directory.
+
+Inside this same directory, there are two executable scripts for the data logger and the query interface.
+
+### Data logger
+
+To start the data logger, run
+
+```
+python3 logger_main.py [black-box-database-name]
+```
+
+inside the `pybb` directory.
+
+### Query interface
+
+To use the query interface, run
+
+```
+python3 query_interface_main.py [absolute-path-to-a-black-box-config-file]
+```
+
+inside the `pybb` directory.
 
 ## Compilation and Usage (C++)
 
@@ -151,41 +192,3 @@ To launch the component monitors, run the command
 ```
 
 inside the previously created `build` directory.
-
-## Usage (Python)
-
-The black box functionalities are exposed through a `black_box` package that contains two subpackages - `query_interface` and `odm`. To install the package, run the command
-
-```
-python3 setup.py install
-```
-
-or, if only development setup is desired,
-
-```
-python3 setup.py develop
-```
-
-inside the `pybb` directory.
-
-Inside this same directory, there are two executable scripts for the query interface and the ODM.
-
-### Query interface
-
-To use the query interface, run
-
-```
-python3 query_interface_main.py [absolute-path-to-a-black-box-config-file]
-```
-
-inside the `pybb` directory.
-
-### ODM
-
-To use the ODM, run
-
-```
-python3 odm_main.py [black-box-database-name]
-```
-
-inside the `pybb` directory. This will create a set of scripts - one corresponding to each collection in the black box database - in the directory where the script was executed.
