@@ -59,8 +59,12 @@ class ROSTopicReader(object):
         and blocks the execution (expected to be run as a background process).
         '''
         rospy.init_node(self.node_handle_name)
+        print('[rostopic_reader] {0} initialised'.format(self.node_handle_name))
         self.__init_listeners()
-        rospy.spin()
+        try:
+            rospy.spin()
+        except TypeError:
+            print('[rostopic_reader] {0} terminated'.format(self.node_handle_name))
 
     def __terminate_node(self):
         if self.listeners_initialised:
