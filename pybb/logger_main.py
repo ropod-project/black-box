@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import sys
 
 from black_box.config.config_file_reader import ConfigFileReader
