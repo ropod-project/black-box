@@ -10,6 +10,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ropod_ros_msgs REQUIRED)
+find_package(ros_type_introspection REQUIRED)
 find_package(PkgConfig)
 include(FindPkgConfig)
 
@@ -94,21 +95,7 @@ add_library(datalogger
     src/data_readers/zyre_reader.cpp
     src/rostopic_listeners/rostopic_listener_factory.cpp
     src/rostopic_listeners/rostopic_listener_base.cpp
-    src/rostopic_listeners/string_listener.cpp
-    src/rostopic_listeners/odom_listener.cpp
-    src/rostopic_listeners/path_listener.cpp
-    src/rostopic_listeners/move_base_result_listener.cpp
-    src/rostopic_listeners/pose_listener.cpp
-    src/rostopic_listeners/pose_stamped_listener.cpp
-    src/rostopic_listeners/wrench_stamped_listener.cpp
-    src/rostopic_listeners/pose_with_covariance_stamped_listener.cpp
-    src/rostopic_listeners/imu_listener.cpp
-    src/rostopic_listeners/joy_listener.cpp
-    src/rostopic_listeners/twist_listener.cpp
-    src/rostopic_listeners/laserscan_listener.cpp
-    src/rostopic_listeners/door_listener.cpp
-    src/rostopic_listeners/joint_state_listener.cpp
-    src/rostopic_listeners/smart_wheel_data_listener.cpp
+    src/rostopic_listeners/generic_topic_listener.cpp
 )
 
 target_link_libraries(datalogger
@@ -121,12 +108,7 @@ target_link_libraries(datalogger
     ${LIBBSONCXX_LIBRARIES}
     ${roscpp_LIBRARIES}
     ${topic_tools_LIBRARIES}
-    ${std_msgs_LIBRARIES}
-    ${geometry_msgs_LIBRARIES}
-    ${nav_msgs_LIBRARIES}
-    ${move_base_msgs_LIBRARIES}
-    ${sensor_msgs_LIBRARIES}
-    ${ropod_ros_msgs_LIBRARIES}
+    ${ros_type_introspection_LIBRARIES}
     ${LIBS}
 )
 

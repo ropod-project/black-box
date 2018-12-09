@@ -33,7 +33,6 @@ class BlackBoxODM(object):
             pass
 
         for collection_name in collection_names:
-            print('Generating Python class from collection "{0}"'.format(collection_name))
             collection = self.__database[collection_name]
             doc = collection.find_one()
             class_name = ''.join([x.title() for x in collection_name.split('_')])
@@ -41,103 +40,12 @@ class BlackBoxODM(object):
             class_definitions = dict()
             class_definitions[class_name] = dict()
 
-            variable_dict, variable_mapping_dict = self.__generate_variable_dicts(doc)
             self.__generate_class_definitions(self.db_name, collection_name,
-                                              variable_dict, variable_mapping_dict,
-                                              class_name, class_definitions)
+                                              doc, '', class_name, class_definitions)
             self.__generate_source_file(self.db_name, collection_name, class_definitions)
-            print('Script "{0}.py" generated'.format(collection_name))
-
-    def __generate_variable_dicts(self, doc):
-        '''Returns two nested dictionaries:
-        variable_dict a nested dictionary in which the keys represent variable or
-                      object names; in the case of an object, the values represent
-                      names of variables (or objects) belonging to the object; in
-                      the case of a variable, the value is equivalent to the key
-        variable_mapping_dict a nested dictionary in which the keys represent
-                              variable or object names (same as in variable_dict);
-                              in the case of an object, the values represent
-                              names of variables (or objects) belonging to the object;
-                              in the case of a variable, the value represents
-                              the name of a MongoDB document value that correspond
-                              to the variable
-
-        Keyword argument:
-        @param doc a MongoDB document
-
-        Example: Consider the following document that might be stored in a database:
-        {
-            "_id" : ObjectId("5ba8b821805b917146371ed2"),
-            "angular/x" : 0.0,
-            "angular/y" : 0.0,
-            "angular/z" : 0.0,
-            "linear/x" : 1.0,
-            "linear/y" : 0.0,
-            "linear/z" : 0.0,
-            "timestamp" : 1537783841.417
-        }
-
-        The two returned dictionaries will have the following form in this case:
-
-        variable_dict:
-        {
-            'linear':
-            {
-                'y': 0.0,
-                'z': 0.0,
-                'x': 0.0
-            },
-            'angular':
-            {
-                'y': 0.0,
-                'z': 0.0,
-                'x': 0.0
-            },
-            '_id': ObjectId('5ba8b821805b917146371ed2'),
-            'timestamp': 1537783841.417
-        }
-
-        variable_mapping_dict:
-        {
-            'linear':
-            {
-                'y': 'linear/y',
-                'z': 'linear/z',
-                'x': 'linear/x'
-            },
-            'angular':
-            {
-                'y': 'angular/y',
-                'z': 'angular/z',
-                'x': 'angular/x'
-            },
-            '_id': '_id',
-            'timestamp': 'timestamp'
-        }
-
-        '''
-        variable_dict = dict()
-        variable_mapping_dict = dict()
-        for full_variable_name in doc:
-            slash_indices = [0]
-            current_variable_dict = variable_dict
-            current_variable_mapping_dict = variable_mapping_dict
-            for i, char in enumerate(full_variable_name):
-                if char == '/':
-                    slash_indices.append(i+1)
-                    name_component = full_variable_name[slash_indices[-2]:slash_indices[-1]-1]
-                    if name_component not in current_variable_dict:
-                        current_variable_dict[name_component] = dict()
-                        current_variable_mapping_dict[name_component] = dict()
-                    current_variable_dict = current_variable_dict[name_component]
-                    current_variable_mapping_dict = current_variable_mapping_dict[name_component]
-            name_component = full_variable_name[slash_indices[-1]:]
-            current_variable_dict[name_component] = doc[full_variable_name]
-            current_variable_mapping_dict[name_component] = full_variable_name
-        return variable_dict, variable_mapping_dict
 
     def __generate_class_definitions(self, db_name, collection_name,
-                                     variables, variable_mappings,
+                                     variables, current_variable_mapping,
                                      class_name, class_definitions):
         if type(variables).__name__ != 'dict':
             return
@@ -154,16 +62,20 @@ class BlackBoxODM(object):
                 else:
                     class_definitions[class_name][variable] = str(variables[variable])
                 class_definitions[class_name]['variables'].append(variable)
-                class_definitions[class_name]['variable_mappings'][variable] = variable_mappings[variable]
+
+                variable_mapping = '{0}["{1}"]'.format(current_variable_mapping, variable)
+                class_definitions[class_name]['variable_mappings'][variable] = variable_mapping
             else:
                 new_class_name = variable.title()
                 class_definitions[class_name][variable] = new_class_name + '()'
                 class_definitions[class_name]['objects'].append(variable)
                 class_definitions[new_class_name] = dict()
+
+                new_variable_mapping = '{0}["{1}"]'.format(current_variable_mapping, variable)
                 self.__generate_class_definitions(db_name,
                                                   collection_name,
                                                   variables[variable],
-                                                  variable_mappings[variable],
+                                                  new_variable_mapping,
                                                   new_class_name,
                                                   class_definitions)
 
@@ -201,7 +113,7 @@ class BlackBoxODM(object):
             for var in class_definitions[class_name]:
                 if var in class_definitions[class_name]['variables']:
                     var_mapping = class_definitions[class_name]['variable_mappings'][var]
-                    class_str += '            obj.{0} = doc["{1}"]\n'.format(var, var_mapping)
+                    class_str += '            obj.{0} = doc{1}\n'.format(var, var_mapping)
                 elif var in class_definitions[class_name]['objects']:
                     class_str += '            obj.{0}.from_doc(doc)\n'.format(var)
             class_str += '            data.append(obj)\n'
@@ -211,7 +123,7 @@ class BlackBoxODM(object):
             for var in class_definitions[class_name]:
                 if var in class_definitions[class_name]['variables']:
                     var_mapping = class_definitions[class_name]['variable_mappings'][var]
-                    class_str += '        self.{0} = doc["{1}"]\n'.format(var, var_mapping)
+                    class_str += '        self.{0} = doc{1}\n'.format(var, var_mapping)
                 elif var in class_definitions[class_name]['objects']:
                     class_str += '        self.{0}.from_doc(doc)\n'.format(var)
             script_source += '{0}\n\n'.format(class_str)
