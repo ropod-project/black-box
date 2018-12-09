@@ -207,12 +207,13 @@ class DBInterface(object):
                 new_var_name = '{0}/{1}'.format(current_var_name, name)
                 var_list = self.__get_flattened_variable_names(current_dict[name],
                                                                new_var_name)
+                variables.extend(var_list)
             else:
                 new_var_name = current_var_name
                 for i, list_item in enumerate(current_dict[name]):
                     new_var_name = '{0}/{1}/{2}'.format(current_var_name, name, str(i))
                     var_list = self.__get_flattened_variable_names(list_item, new_var_name)
-            variables.extend(var_list)
+                    variables.extend(var_list)
         return variables
 
     def __get_var_value(self, item_dict, var_name):
@@ -271,6 +272,8 @@ class DBInterface(object):
 
         val = None
         try:
+            if var_name.isdigit():
+                var_name = int(var_name)
             val = current_item[var_name]
         except KeyError:
             print('An unknown variable {0} was requested; returning None'.format(var_name))
