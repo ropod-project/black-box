@@ -1,27 +1,26 @@
 from multiprocessing import Process
 import rospy
 import rosnode
-from black_box.datalogger.data_readers.reader_base import DataReaderBase
 from black_box.datalogger.rostopic_listener import ROSTopicListener
 
-class ROSTopicReader(DataReaderBase):
+class ROSTopicReader(object):
     '''An interface for managing ROS topic listeners.
 
     Constructor arguments:
     @param node_handle_name -- name of the ROS listener node
     @param config_params -- an instance of black_box.config.config_params.RosParams
     @param max_frequency -- maximum frequency at which the node should be running
-    @data_logger -- a black_box.loggers.LoggerBase instance
+    @param data_logger -- a black_box.loggers.LoggerBase instance
 
     @author Alex Mitrevski, Santosh Thoduka
     @contact aleksandar.mitrevski@h-brs.de, santosh.thoduka@h-brs.de
 
     '''
     def __init__(self, node_handle_name, config_params, max_frequency, data_logger):
-        super(ROSTopicReader, self).__init__(data_logger)
         self.node_handle_name = node_handle_name
         self.config_params = config_params
         self.max_frequency = max_frequency
+        self.data_logger = data_logger
         self.listeners = []
         self.listeners_initialised = False
         self.node_thread = None
