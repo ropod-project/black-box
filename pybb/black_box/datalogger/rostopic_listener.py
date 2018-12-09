@@ -1,7 +1,7 @@
 import time
 from importlib import import_module
-import rospy
 from rospy_message_converter.message_converter import convert_ros_message_to_dictionary
+import rospy
 
 class ROSTopicListener(object):
     '''A generic ROS topic listener.
@@ -27,6 +27,8 @@ class ROSTopicListener(object):
         self.max_frequency = max_frequency
         self.data_logger = data_logger
         self.subscriber = None
+        self.previous_msg_time = time.time()
+        self.min_time_between_msgs = 1. / max_frequency
 
         self.variable_name = self.topic_name
         if self.variable_name[0] == '/':
@@ -49,7 +51,19 @@ class ROSTopicListener(object):
 
     def log_msg(self, msg):
         '''Passes the received message on to the data logger (in a dictionary form).
+
+        @param msg -- a ROS message of type "self.msg_type"
+
         '''
-        dict_msg = convert_ros_message_to_dictionary(msg)
-        timestamp = time.time()
-        self.data_logger.log_data(self.variable_name, timestamp, dict_msg)
+        if self.min_time_elapsed():
+            dict_msg = convert_ros_message_to_dictionary(msg)
+            timestamp = time.time()
+            self.data_logger.log_data(self.variable_name, timestamp, dict_msg)
+            self.previous_msg_time = timestamp
+
+    def min_time_elapsed(self):
+        '''Returns True if the elapsed time since the last message is
+        greater than the minimum allowed time between messages; returns False otherwise.
+        '''
+        elapsed_time = time.time() - self.previous_msg_time
+        return elapsed_time > self.min_time_between_msgs
