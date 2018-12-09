@@ -4,7 +4,8 @@ import rospy
 from rospy_message_converter.message_converter import convert_ros_message_to_dictionary
 
 class ROSTopicListener(object):
-    def __init__(self, topic_name, msg_pkg, msg_type, max_frequency, data_logger):
+    def __init__(self, topic_name, msg_pkg, msg_type,
+                 max_frequency, data_logger, interface_name='ros'):
         self.topic_name = topic_name
         self.msg_pkg = msg_pkg
         self.msg_type = msg_type
@@ -16,6 +17,7 @@ class ROSTopicListener(object):
         if self.variable_name[0] == '/':
             self.variable_name = self.variable_name[1:]
         self.variable_name = self.variable_name.replace('/', '_')
+        self.variable_name = '{0}_{1}'.format(interface_name, self.variable_name)
 
     def start(self):
         msg_module = import_module(self.msg_pkg)
