@@ -20,13 +20,15 @@ The main design principles of our robotics black box are:
 
 Our black box design principles were initially introduced in
 
-A. Mitrevski, S. Thoduka, A. Ortega Sáinz, M. Schöbel, P. Nagel, P. G. Plöger, and E. Prassler, "Deploying Robots in Everyday Environments: Towards Dependable and Practical Robotic Systems," in 29th International Workshop on Principles of Diagnosis (DX), Warsaw, Poland, 2018.
+A. Mitrevski, S. Thoduka, A. Ortega Sáinz, M. Schöbel, P. Nagel, P. G. Plöger, and E. Prassler, "Deploying Robots in Everyday Environments: Towards Dependable and Practical Robotic Systems," in 29th International Workshop on Principles of Diagnosis (DX), Warsaw, Poland, 2018
+
+which have however evolved in a few respects since that paper was published.
 
 ### Data Format
 
-The black box stores data in a custom standard format, such that
-1. **all data types are logged at a single level of abstraction (i.e. in an unrolled manner) regardless of the complexity of the logged data type** and
-2. **logged data are always associated with a timestamp**
+The black box stores data in a standard format, such that
+1. **logged data are always associated with a timestamp** and
+2. **all data types are logged in a nested manner that reflects the underlying data type** (in the original version of the black box introduced in the above paper, data were logged at a single level of abstraction, i.e. in an unrolled manner, but we've abandoned that design since it required manual conversion of data to the standard format, which was inconvenient particularly in the case of logging ROS messages).
 
 This is best illustrated by an example. If we want to log a ROS topic of type [geometry_msgs/Pose](http://docs.ros.org/lunar/api/geometry_msgs/html/msg/Pose.html), which is defined as
 
@@ -46,16 +48,16 @@ the logged data will have the following format:
 
 ```
 double timestamp
-double position/x
-double position/y
-double position/z
-double orientation/x
-double orientation/y
-double orientation/z
-double orientation/w
+position
+    double x
+    double y
+    double z
+orientation
+    double x
+    double y
+    double z
+    double w
 ```
-
-where the `/` is used for separating the different levels of abstraction of the underlying data type.
 
 The black box uses a MongoDB database for logging data, such that each data type is stored in a separate collection and data items belonging to that data type are stored in separate documents for each time step. In the above example, the items of the geometry_msgs/Pose message will be stored in a collection named `ros_topic-name`, where `topic-name` is the name of the logged ROS topic, `ros` describes the data source (in this case ROS) and, by convention, the `_` separates the data source and data type names. The full names of the logged variables will thus be
 
@@ -69,6 +71,8 @@ ros_cmd_vel/orientation/y
 ros_cmd_vel/orientation/z
 ros_cmd_vel/orientation/w
 ```
+
+The full names of the variables are the ones we use for querying data.
 
 ### Data Filtering and Configurability
 
