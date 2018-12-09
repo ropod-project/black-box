@@ -1,7 +1,7 @@
 from multiprocessing import Process
 import rospy
 import rosnode
-from black_box.datalogger.rostopic_listener import ROSTopicListener
+from black_box.datalogger.data_readers.rostopic_listener import ROSTopicListener
 
 class ROSTopicReader(object):
     '''An interface for managing ROS topic listeners.
