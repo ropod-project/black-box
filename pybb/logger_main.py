@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 import sys
 
 from black_box.config.config_file_reader import ConfigFileReader
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     if debug:
         print(config_params)
 
-    logger = MongoDBLogger(db_name='log_test', db_port=27017,
+    logger = MongoDBLogger(db_name='logs', db_port=27017,
                            split_db=config_params.default.split_db,
                            max_db_size=config_params.default.max_db_size)
 
