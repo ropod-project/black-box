@@ -121,7 +121,7 @@ Data from the black box can be retrieved through a Zyre-based query interface th
 The C++ black box components depend on the following libraries:
 * [`ropod_common`](https://github.com/ropod-project/ropod_common)
 * `yaml-cpp`
-* Several ROS components: `roscpp`, `topic_tools`, `std_msgs`, `geometry_msgs`, `nav_msgs`, and `sensor_msgs`
+* Various ROS components: `roscpp`, `topic_tools`, [`ros_type_introspection`](https://github.com/ropod-project/ros_type_introspection)
 * `jsoncpp`
 * `MongoDB` and the `MongoDB C++` driver
 * `zyre`
