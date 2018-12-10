@@ -59,16 +59,7 @@ class BlackBoxQueryInterface(PyreBaseCommunicator):
 
             start_time = float(dict_msg['payload']['startTime'])
             end_time = float(dict_msg['payload']['endTime'])
-
-            variable_map = dict()
-            for variable_name in dict_msg['payload']['variables']:
-                slash_idx = variable_name.find('/')
-                var_group_name = variable_name[0:slash_idx]
-                var_name = variable_name[slash_idx+1:]
-
-                if var_group_name not in variable_map:
-                    variable_map[var_group_name] = list()
-                variable_map[var_group_name].append(var_name)
+            variable_map = self.__get_variable_map(dict_msg['payload']['variables'])
 
             data = dict()
             for var_group_name, variable_names in variable_map.items():
@@ -80,6 +71,51 @@ class BlackBoxQueryInterface(PyreBaseCommunicator):
             response_msg['payload']['receiverId'] = dict_msg['payload']['senderId']
             response_msg['payload']['dataList'] = data
             return response_msg
+        elif message_type == 'LATEST-DATA-QUERY':
+            black_box_id = dict_msg['payload']['blackBoxId']
+            if black_box_id != self.black_box_id:
+                return
+
+            variable_map = self.__get_variable_map(dict_msg['payload']['variables'])
+            data = dict()
+            for var_group_name, variable_names in variable_map.items():
+                data_maps = self.db_interface.get_latest_data(var_group_name, variable_names)
+                data.update(data_maps)
+
+            response_msg = self.__get_response_msg_skeleton(message_type)
+            response_msg['payload']['receiverId'] = dict_msg['payload']['senderId']
+            response_msg['payload']['dataList'] = data
+            return response_msg
+
+    def __get_variable_map(self, variables):
+        '''Returns a dictionary in which each key is a variable group name and the
+        value is a list of variables corresponding to the group. Assumes that
+        the given variables have the format "group_name/variable_name"
+        (e.g. ros_cmd_vel/linear/x, where ros_cmd_val is the group name and
+        linear/x is the variable name)
+
+        Example:
+        If varibles is the list ["ros_cmd_vel/linear/x", "ros_cmd_vel/linear/y",
+        ros_cmd_vel/angular/z, "ros_pose/x", "ros_pose/y"], the resulting dictionary
+        will have the format
+        {
+            "ros_cmd_vel": { ["linear/x", "linear/y", "angular/z"] },
+            "ros_pose": { ["x", "y"] }
+        }
+
+        @param variables a list of variable names
+
+        '''
+        variable_map = dict()
+        for variable_name in variables:
+            slash_idx = variable_name.find('/')
+            var_group_name = variable_name[0:slash_idx]
+            var_name = variable_name[slash_idx+1:]
+
+            if var_group_name not in variable_map:
+                variable_map[var_group_name] = list()
+            variable_map[var_group_name].append(var_name)
+        return variable_map
 
     def __get_response_msg_skeleton(self, msg_type):
         '''Returns a dictionary representing a query response for the given message type.

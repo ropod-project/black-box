@@ -92,10 +92,12 @@ namespace readers
     {
         for (unsigned int i=0; i<config_params_.topics.size(); i++)
         {
-            readers_.push_back(ros_listeners::ROSTopicListenerFactory::createListener(
-                        config_params_.topics[i].name, config_params_.topics[i].type,
-                        config_params_.topics[i].variable_names,
-                        config_params_.topics[i].max_frequency, data_logger));
+            std::shared_ptr<GenericTopicListener> listener(
+                new GenericTopicListener(config_params_.topics[i].name,
+                                         config_params_.topics[i].type,
+                                         config_params_.topics[i].max_frequency,
+                                         data_logger));
+            readers_.push_back(listener);
         }
     }
 }
