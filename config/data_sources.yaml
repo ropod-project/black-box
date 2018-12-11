@@ -17,223 +17,92 @@
     ros_master_uri: localhost
     topics:
         - topic:
-            name: odom
+            name: /ropod/odom
             type: nav_msgs/Odometry
             variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
             max_frequency: 5
+            metadata:
+                ros:
+                    topic_name: /ropod/odom
+                    msg_type: nav_msgs/Odometry
+                    direct_msg_mapping: true
         - topic:
             name: /move_base/DWAPlannerROS/global_plan
             type: nav_msgs/Path
             variable_names: [poses]
             max_frequency: 5
+            metadata:
+                ros:
+                    topic_name: /move_base/DWAPlannerROS/global_plan
+                    msg_type: nav_msgs/Path
+                    direct_msg_mapping: true
         - topic:
             name: /move_base/DWAPlannerROS/local_plan
             type: nav_msgs/Path
             variable_names: [poses]
             max_frequency: 5
+            metadata:
+                ros:
+                    topic_name: /move_base/DWAPlannerROS/local_plan
+                    msg_type: nav_msgs/Path
+                    direct_msg_mapping: true
         - topic:
             name: amcl_pose
             type: geometry_msgs/PoseWithCovarianceStamped
             variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, covariance]
             max_frequency: 30
+            metadata:
+                ros:
+                    topic_name: amcl_pose
+                    msg_type: geometry_msgs/PoseWithCovarianceStamped
+                    direct_msg_mapping: true
         - topic:
-            name: scan_front
+            name: /ropod/laser/scan
             type: sensor_msgs/LaserScan
             variable_names: [frame_id, angle_min, angle_max, angle_increment, time_increment, scan_time, range_min, range_max, ranges]
             max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: /ropod/laser/scan
+                    msg_type: sensor_msgs/LaserScan
+                    direct_msg_mapping: true
         - topic:
-            name: scan_rear
-            type: sensor_msgs/LaserScan
-            variable_names: [frame_id, angle_min, angle_max, angle_increment, time_increment, scan_time, range_min, range_max, ranges]
-            max_frequency: 1
-        - topic:
-            name: cmd_vel
+            name: /ropod/cmd_vel
             type: geometry_msgs/Twist
             variable_names: [linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
             max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /ropod/cmd_vel
+                    msg_type: geometry_msgs/Twist
+                    direct_msg_mapping: true
         - topic:
             name: /move_base/result
             type: move_base_msgs/MoveBaseActionResult
             variable_names: [status, id, text]
             max_frequency: 5
+            metadata:
+                ros:
+                    topic_name: /move_base/result
+                    msg_type: move_base_msgs/MoveBaseActionResult
+                    direct_msg_mapping: true
         - topic:
             name: /joint_states
             type: sensor_msgs/JointState
             variable_names: [name, position, velocity, effort, frame_id]
             max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /joint_states
+                    msg_type: sensor_msgs/JointState
+                    direct_msg_mapping: true
         - topic:
             name: /sw_ethercat_parser/data
             type: ropod_ros_msgs/SmartWheelData
             variable_names: [commands, sensors, working_count]
             max_frequency: 10
-- zmq:
-    topics:
-        - topic:
-            url: tcp://127.0.0.1
-            port: 5555
-            name: events
-            type: json
-            variable_names: [source, user_role, message]
-            max_frequency: 30
-- ethercat:
-    interfaces:
-        - interface_specification:
-            interface: lo
-            input_message_size: 36
-            output_message_size: 168
-            number_of_slaves: 1
-            output_message_elements:
-                - element:
-                    name: status1
-                    type: uint16
-                - element:
-                    name: status2
-                    type: uint16
-                - element:
-                    name: sensor_ts
-                    type: uint64
-                - element:
-                    name: setpoint_ts
-                    type: uint64
-                - element:
-                    name: encoder_1
-                    type: float
-                - element:
-                    name: velocity_1
-                    type: float
-                - element:
-                    name: current_1_d
-                    type: float
-                - element:
-                    name: current_1_q
-                    type: float
-                - element:
-                    name: current_1_u
-                    type: float
-                - element:
-                    name: current_1_v
-                    type: float
-                - element:
-                    name: current_1_w
-                    type: float
-                - element:
-                    name: voltage_1
-                    type: float
-                - element:
-                    name: voltage_1_u
-                    type: float
-                - element:
-                    name: voltage_1_v
-                    type: float
-                - element:
-                    name: voltage_1_w
-                    type: float
-                - element:
-                    name: temperature_1
-                    type: float
-                - element:
-                    name: encoder_2
-                    type: float
-                - element:
-                    name: velocity_2
-                    type: float
-                - element:
-                    name: current_2_d
-                    type: float
-                - element:
-                    name: current_2_q
-                    type: float
-                - element:
-                    name: current_2_u
-                    type: float
-                - element:
-                    name: current_2_v
-                    type: float
-                - element:
-                    name: current_2_w
-                    type: float
-                - element:
-                    name: voltage_2
-                    type: float
-                - element:
-                    name: voltage_2_u
-                    type: float
-                - element:
-                    name: voltage_2_v
-                    type: float
-                - element:
-                    name: voltage_2_w
-                    type: float
-                - element:
-                    name: temperature_2
-                    type: float
-                - element:
-                    name: encoder_pivot
-                    type: float
-                - element:
-                    name: velocity_pivot
-                    type: float
-                - element:
-                    name: voltage_bus
-                    type: float
-                - element:
-                    name: imu_ts
-                    type: uint64
-                - element:
-                    name: accel_x
-                    type: float
-                - element:
-                    name: accel_y
-                    type: float
-                - element:
-                    name: accel_z
-                    type: float
-                - element:
-                    name: gyro_x
-                    type: float
-                - element:
-                    name: gyro_y
-                    type: float
-                - element:
-                    name: gyro_z
-                    type: float
-                - element:
-                    name: temperature_imu
-                    type: float
-                - element:
-                    name: pressure
-                    type: float
-            input_message_elements:
-                - element:
-                    name: command1
-                    type: uint16
-                - element:
-                    name: command2
-                    type: uint16
-                - element:
-                    name: setpoint1
-                    type: float
-                - element:
-                    name: setpoint2
-                    type: float
-                - element:
-                    name: limit1_p
-                    type: float
-                - element:
-                    name: limit1_n
-                    type: float
-                - element:
-                    name: limit2_p
-                    type: float
-                - element:
-                    name: limit2_n
-                    type: float
-                - element:
-                    name: timestamp
-                    type: uint64
-            output_data_items:
-                name: ropod_output_data
-                variable_names: [status1, status2, sensor_ts, setpoint_ts, encoder_1, velocity_1, current_1_d, current_1_q, current_1_u, current_1_v, current_1_w, voltage_1, voltage_1_u, voltage_1_v, voltage_1_w, temperature_1, encoder_2, velocity_2, current_2_d, current_2_q, current_2_u, current_2_v, current_2_w, voltage_2, voltage_2_u, voltage_2_v, voltage_2_w, temperature_2, encoder_pivot, velocity_pivot, voltage_bus, imu_ts, accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z, temperature_imu, pressure]
-            input_data_items:
-                name: ropod_input_data
-                variable_names: [command1, command2, setpoint1, setpoint2, limit1_p, limit1_n, limit2_p, limit2_n, timestamp]
+            metadata:
+                ros:
+                    topic_name: /sw_ethercat_parser/data
+                    msg_type: ropod_ros_msgs/SmartWheelData
+                    direct_msg_mapping: true
