@@ -22,6 +22,7 @@ if __name__ == '__main__':
     logger = MongoDBLogger(db_name='logs', db_port=27017,
                            split_db=config_params.default.split_db,
                            max_db_size=config_params.default.max_db_size)
+    logger.write_metadata(config_params)
 
     zyre_reader = ZyreReader(config_params.zyre, logger)
 

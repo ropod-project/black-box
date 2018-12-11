@@ -64,6 +64,14 @@ class ConfigFileReader(object):
                             print('ros: max_frequency not specified; using default {0}'.format(params.default.max_frequency))
                             topic_params.max_frequency = params.default.max_frequency
 
+                        if 'metadata' in topic_data:
+                            if 'ros' in topic_data['metadata']:
+                                ros_metadata = config_params.RosMetadataParams()
+                                ros_metadata.topic_name = topic_data['metadata']['ros']['topic_name']
+                                ros_metadata.msg_type = topic_data['metadata']['ros']['msg_type']
+                                ros_metadata.direct_msg_mapping = topic_data['metadata']['ros']['direct_msg_mapping']
+                                topic_params.metadata = ros_metadata
+
                         params.ros.topic.append(topic_params)
                 else:
                     raise Exception('ros: topics not specified')

@@ -2,6 +2,7 @@ import time
 from importlib import import_module
 from rospy_message_converter.message_converter import convert_ros_message_to_dictionary
 import rospy
+from black_box.config.config_utils import ConfigUtils
 
 class ROSTopicListener(object):
     '''A generic ROS topic listener.
@@ -29,12 +30,7 @@ class ROSTopicListener(object):
         self.subscriber = None
         self.previous_msg_time = time.time()
         self.min_time_between_msgs = 1. / max_frequency
-
-        self.variable_name = self.topic_name
-        if self.variable_name[0] == '/':
-            self.variable_name = self.variable_name[1:]
-        self.variable_name = self.variable_name.replace('/', '_')
-        self.variable_name = '{0}_{1}'.format(interface_name, self.variable_name)
+        self.variable_name = ConfigUtils.get_full_variable_name(interface_name, self.topic_name)
 
     def start(self):
         '''Creates a topic subscriber for "self.topic_name" of type "self.msg_type".

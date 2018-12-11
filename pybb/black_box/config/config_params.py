@@ -19,6 +19,7 @@ class RosTopicParams(object):
         self.msg_pkg = ''
         self.msg_type = ''
         self.max_frequency = 0
+        self.metadata = None
 
 class RosParams(object):
     def __init__(self):
@@ -30,6 +31,12 @@ class ZyreParams(object):
         self.node_name = ''
         self.groups = []
         self.message_types = []
+
+class RosMetadataParams(object):
+    def __init__(self):
+        self.topic_name = ''
+        self.msg_type = ''
+        self.direct_msg_mapping = True
 
 class ConfigParams(object):
     def __init__(self):
@@ -53,6 +60,11 @@ class ConfigParams(object):
             obj_str += '            msg_pkg: {0}\n'.format(topic_params.msg_pkg)
             obj_str += '            msg_type: {0}\n'.format(topic_params.msg_type)
             obj_str += '            max_frequency: {0}\n'.format(topic_params.max_frequency)
+            obj_str += '            metadata:\n'
+            obj_str += '                ros:\n'
+            obj_str += '                    topic_name: {0}\n'.format(topic_params.metadata.topic_name)
+            obj_str += '                    msg_type: {0}\n'.format(topic_params.metadata.msg_type)
+            obj_str += '                    direct_msg_mapping: {0}\n'.format(topic_params.metadata.direct_msg_mapping)
 
         obj_str += 'zyre_params:\n'
         obj_str += '    node_name: {0}\n'.format(self.zyre.node_name)
