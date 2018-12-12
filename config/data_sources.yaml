@@ -17,6 +17,16 @@
     ros_master_uri: localhost
     topics:
         - topic:
+            name: map
+            type: nav_msgs/OccupancyGrid
+            variable_names: []
+            max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: map
+                    msg_type: nav_msgs/OccupancyGrid
+                    direct_msg_mapping: true
+        - topic:
             name: /ropod/odom
             type: nav_msgs/Odometry
             variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
@@ -25,26 +35,6 @@
                 ros:
                     topic_name: /ropod/odom
                     msg_type: nav_msgs/Odometry
-                    direct_msg_mapping: true
-        - topic:
-            name: /move_base/DWAPlannerROS/global_plan
-            type: nav_msgs/Path
-            variable_names: [poses]
-            max_frequency: 5
-            metadata:
-                ros:
-                    topic_name: /move_base/DWAPlannerROS/global_plan
-                    msg_type: nav_msgs/Path
-                    direct_msg_mapping: true
-        - topic:
-            name: /move_base/DWAPlannerROS/local_plan
-            type: nav_msgs/Path
-            variable_names: [poses]
-            max_frequency: 5
-            metadata:
-                ros:
-                    topic_name: /move_base/DWAPlannerROS/local_plan
-                    msg_type: nav_msgs/Path
                     direct_msg_mapping: true
         - topic:
             name: amcl_pose
@@ -77,26 +67,6 @@
                     msg_type: geometry_msgs/Twist
                     direct_msg_mapping: true
         - topic:
-            name: /move_base/result
-            type: move_base_msgs/MoveBaseActionResult
-            variable_names: [status, id, text]
-            max_frequency: 5
-            metadata:
-                ros:
-                    topic_name: /move_base/result
-                    msg_type: move_base_msgs/MoveBaseActionResult
-                    direct_msg_mapping: true
-        - topic:
-            name: /joint_states
-            type: sensor_msgs/JointState
-            variable_names: [name, position, velocity, effort, frame_id]
-            max_frequency: 10
-            metadata:
-                ros:
-                    topic_name: /joint_states
-                    msg_type: sensor_msgs/JointState
-                    direct_msg_mapping: true
-        - topic:
             name: /sw_ethercat_parser/data
             type: ropod_ros_msgs/SmartWheelData
             variable_names: [commands, sensors, working_count]
@@ -105,4 +75,54 @@
                 ros:
                     topic_name: /sw_ethercat_parser/data
                     msg_type: ropod_ros_msgs/SmartWheelData
+                    direct_msg_mapping: true
+        - topic:
+            name: /load/cmd_vel
+            type: geometry_msgs/Twist
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /load/cmd_vel
+                    msg_type: geometry_msgs/Twist
+                    direct_msg_mapping: true
+        - topic:
+            name: /route_navigation/goal
+            type: maneuver_navigation/Goal
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /route_navigation/goal
+                    msg_type: maneuver_navigation/Goal
+                    direct_msg_mapping: true
+        - topic:
+            name: /maneuver_navigation/goal_rviz
+            type: geometry_msgs/PoseStamped
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /maneuver_navigation/goal_rviz
+                    msg_type: geometry_msgs/PoseStamped
+                    direct_msg_mapping: true
+        - topic:
+            name: /maneuver_navigation/local_costmap/costmap
+            type: nav_msgs/OccupancyGrid
+            variable_names: []
+            max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: /maneuver_navigation/local_costmap/costmap
+                    msg_type: nav_msgs/OccupancyGrid
+                    direct_msg_mapping: true
+        - topic:
+            name: /tf
+            type: tf2_msgs/TFMessage
+            variable_names: []
+            max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: /tf
+                    msg_type: tf2_msgs/TFMessage
                     direct_msg_mapping: true
