@@ -25,16 +25,29 @@ class MongoDBLogger(LoggerBase):
             else:
                 print('[write_metadata] Saving metadata')
                 collection = db['black_box_metadata']
-                for topic_params in config_params.ros.topic:
-                    collection_name = ConfigUtils.get_full_variable_name('ros', topic_params.name)
-                    if topic_params.metadata:
-                        metadata = {}
-                        metadata['collection_name'] = collection_name
-                        metadata['ros'] = {}
-                        metadata['ros']['topic_name'] = topic_params.metadata.topic_name
-                        metadata['ros']['msg_type'] = topic_params.metadata.msg_type
-                        metadata['ros']['direct_msg_mapping'] = topic_params.metadata.direct_msg_mapping
-                        collection.insert_one(metadata)
+                if config_params.ros:
+                    for topic_params in config_params.ros.topic:
+                        collection_name = ConfigUtils.get_full_variable_name('ros', topic_params.name)
+                        if topic_params.metadata:
+                            metadata = {}
+                            metadata['collection_name'] = collection_name
+                            metadata['ros'] = {}
+                            metadata['ros']['topic_name'] = topic_params.metadata.topic_name
+                            metadata['ros']['msg_type'] = topic_params.metadata.msg_type
+                            metadata['ros']['direct_msg_mapping'] = topic_params.metadata.direct_msg_mapping
+                            collection.insert_one(metadata)
+
+                if config_params.zmq:
+                    for topic_params in config_params.zmq.topics:
+                        collection_name = ConfigUtils.get_full_variable_name('zmq', topic_params.name)
+                        if topic_params.metadata:
+                            metadata = {}
+                            metadata['collection_name'] = collection_name
+                            metadata['ros'] = {}
+                            metadata['ros']['topic_name'] = topic_params.metadata.topic_name
+                            metadata['ros']['msg_type'] = topic_params.metadata.msg_type
+                            metadata['ros']['direct_msg_mapping'] = topic_params.metadata.direct_msg_mapping
+                            collection.insert_one(metadata)
         else:
             print('[write_metadata] config_params needs to be of type ' + \
                   'black_box.config.config_params.ConfigParams')
