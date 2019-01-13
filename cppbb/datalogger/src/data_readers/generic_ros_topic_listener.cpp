@@ -98,134 +98,125 @@ namespace readers
         for (auto value_it: renamed_values)
         {
             std::string full_variable_name = this->removeTopicFromVariableName(value_it.first);
-            std::string name_component = "";
-            std::vector<unsigned int> slash_indices = { 0 };
-            bool is_array_element = false;
-
-            Json::Value* current_variable_dict = &variable_dict;
-            for (unsigned int i=0; i<full_variable_name.size(); i++)
+            std::vector<std::string> tokens;
+            std::string token;
+            std::istringstream ss(full_variable_name);
+            while (std::getline(ss, token, '/'))
             {
-                if (full_variable_name[i] == '/')
+                if (!token.empty())
                 {
-                    // we add one to the index because we want to start
-                    // the next segment of the name from the character
-                    // directly after the slash
-                    slash_indices.push_back(i+1);
-
-                    // e.g. assuming 'full_variable_name' is "variable/map",
-                    // the slash index will be 9, so 'name_component' will
-                    // get the value "variable", which corresponds to
-                    // full_variable_name[0] : full_variable_name[8] (inclusive)
-                    name_component = full_variable_name.substr(slash_indices[slash_indices.size()-2],
-                                                               slash_indices[slash_indices.size()-1] - slash_indices[slash_indices.size()-2] - 1);
-                    if (!current_variable_dict->isMember(name_component))
-                    {
-                        (*current_variable_dict)[name_component] = Json::Value();
-                    }
-                    current_variable_dict = &(*current_variable_dict)[name_component];
-                }
-                else if (full_variable_name[i] == '.')
-                {
-                    is_array_element = true;
-
-                    // if we have an array element, 'full_variable_name' may for instance be
-                    // "variable/map.0"; in this example, the last slash index will be 9 and 'i' will
-                    // have the value 12, so 'name_component'  will get the value "map",
-                    // which corresponds to full_variable_name[9:11] (inclusive)
-                    name_component = full_variable_name.substr(slash_indices[slash_indices.size()-1],
-                                                               i - slash_indices[slash_indices.size()-1]);
-
-                    if (!current_variable_dict->isMember(name_component))
-                    {
-                        (*current_variable_dict)[name_component] = Json::Value();
-                    }
-
-                    const RosIntrospection::Variant& value = value_it.second;
-                    (*current_variable_dict)[name_component].append(value.convert<double>());
+                    tokens.push_back(token);
                 }
             }
-
-            if (!is_array_element)
-            {
-                // again assuming that 'full_variable_name' is "variable/map",
-                // the last slash index will be 9, so 'name_component' will
-                // get the value "map", which corresponds to
-                // full_variable_name[9] : full_variable_name[11] (inclusive)
-                name_component = full_variable_name.substr(slash_indices[slash_indices.size()-1],
-                                                           full_variable_name.size() - slash_indices[slash_indices.size()-1]);
-
-                const RosIntrospection::Variant& value = value_it.second;
-                (*current_variable_dict)[name_component] = value.convert<double>();
-            }
+            Json::Value *current_value = &variable_dict;
+            const RosIntrospection::Variant& value = value_it.second;
+            double leaf_value = value.convert<double>();
+            this->setLeafNode(tokens, current_value, static_cast<void *>(&leaf_value), Json::ValueType::realValue);
         }
 
         // we store the string values from the message
         for (auto value_it : flat_container.name)
         {
             std::string full_variable_name = this->removeTopicFromVariableName(value_it.first.toStdString());
-            std::string name_component = "";
-            std::vector<unsigned int> slash_indices = { 0 };
-            bool is_array_element = false;
-
-            Json::Value* current_variable_dict = &variable_dict;
-            for (unsigned int i=0; i<full_variable_name.size(); i++)
+            std::vector<std::string> tokens;
+            std::string token;
+            std::istringstream ss(full_variable_name);
+            while (std::getline(ss, token, '/'))
             {
-                if (full_variable_name[i] == '/')
+                if (!token.empty())
                 {
-                    // we add one to the index because we want to start
-                    // the next segment of the name from the character
-                    // directly after the slash
-                    slash_indices.push_back(i+1);
-
-                    // e.g. assuming 'full_variable_name' is "variable/map",
-                    // the slash index will be 9, so 'name_component' will
-                    // get the value "variable", which corresponds to
-                    // full_variable_name[0] : full_variable_name[8] (inclusive)
-                    name_component = full_variable_name.substr(slash_indices[slash_indices.size()-2],
-                                                               slash_indices[slash_indices.size()-1] - slash_indices[slash_indices.size()-2] - 1);
-                    if (!current_variable_dict->isMember(name_component))
-                    {
-                        (*current_variable_dict)[name_component] = Json::Value();
-                    }
-                    current_variable_dict = &(*current_variable_dict)[name_component];
-                }
-                else if (full_variable_name[i] == '.')
-                {
-                    is_array_element = true;
-
-                    // again assuming that 'full_variable_name' is "variable/map",
-                    // the last slash index will be 9, so 'name_component' will
-                    // get the value "map", which corresponds to
-                    // full_variable_name[9] : full_variable_name[11] (inclusive)
-                    name_component = full_variable_name.substr(slash_indices[slash_indices.size()-1],
-                                                               i - slash_indices[slash_indices.size()-1]);
-
-                    if (!current_variable_dict->isMember(name_component))
-                    {
-                        (*current_variable_dict)[name_component] = Json::Value();
-                    }
-
-                    const RosIntrospection::Variant& value = value_it.second;
-                    (*current_variable_dict)[name_component].append(value.convert<double>());
+                    tokens.push_back(token);
                 }
             }
-
-            if (!is_array_element)
-            {
-                // again assuming that 'full_variable_name' is "variable/map",
-                // the last slash index will be 9, so 'name_component' will
-                // get the value "map", which corresponds to
-                // full_variable_name[9] : full_variable_name[11] (inclusive)
-                name_component = full_variable_name.substr(slash_indices[slash_indices.size()-1],
-                                                           full_variable_name.size() - slash_indices[slash_indices.size()-1]);
-
-                (*current_variable_dict)[name_component] = value_it.second;
-            }
+            Json::Value *current_value = &variable_dict;
+            std::string leaf_value = value_it.second;
+            this->setLeafNode(tokens, current_value, static_cast<void *>(&leaf_value), Json::ValueType::stringValue);
         }
 
         const std::string json_str = Json::writeString(this->json_stream_builder, variable_dict);
         return json_str;
     }
+
+    // given a list of Json key names, sets the leaf_value
+    // For example: given {tf, transforms.0, transform, translation, y}
+    // it will set current_value["tf"]["transforms"][0]["transform"]["translation"]["y"] = leaf_value
+    void GenericTopicListener::setLeafNode(const std::vector<std::string> &tree, Json::Value *current_value, void *leaf_value, Json::ValueType leaf_type)
+    {
+        for (int i = 0; i < tree.size(); i++)
+        {
+            std::size_t pos = tree[i].find('.');
+            bool is_array = false;
+            std::string array_name;
+            int array_index;
+            // array element (such as transforms.0)
+            if (pos != std::string::npos)
+            {
+                array_name = tree[i].substr(0, pos);
+                array_index = std::stoi(tree[i].substr(pos+1));
+                is_array = true;
+            }
+            // if it's not an array element, create the next level in the tree
+            if (!is_array)
+            {
+                if (!current_value->isMember(tree[i]))
+                {
+                    (*current_value)[tree[i]] = Json::Value();
+                }
+                current_value = &(*current_value)[tree[i]];
+            }
+            else
+            {
+                // check if array exists already in the Json element; if not, create it
+                if (!current_value->isMember(array_name))
+                {
+                    (*current_value)[array_name] = Json::Value();
+                }
+                // if array element doesn't exist, append to the array
+                if ((*current_value)[array_name].size() < array_index+1)
+                {
+                    Json::Value array_element;
+                    // if this is not the leaf node
+                    if (i < tree.size() - 1)
+                    {
+                        // call same function with remaining items in tree
+                        setLeafNode(std::vector<std::string>(tree.begin()+i+1, tree.end()), &array_element, leaf_value, leaf_type);
+                        (*current_value)[array_name].append(array_element);
+                        return;
+                    }
+                    else // we're at at leaf node, we need to set its value. For example /odom/pose/covariance.0
+                    {
+                        (*current_value)[array_name].append(array_element);
+                        if (leaf_type == Json::ValueType::realValue)
+                        {
+                            (*current_value)[array_name][array_index] = *(static_cast<double *>(leaf_value));
+                        }
+                        else if (leaf_type == Json::ValueType::stringValue)
+                        {
+                            (*current_value)[array_name][array_index] = *(static_cast<std::string *>(leaf_value));
+                        }
+                        return;
+                    }
+                }
+                else
+                {
+                    // array element already exists, so just update it
+                    Json::Value &array_element = (*current_value)[array_name][array_index];
+                    setLeafNode(std::vector<std::string>(tree.begin()+i+1, tree.end()), &array_element, leaf_value, leaf_type);
+                    return;
+                }
+            }
+        }
+        // set value of leaf
+        if (leaf_type == Json::ValueType::realValue)
+        {
+            *current_value = *(static_cast<double *>(leaf_value));
+        }
+        else if( leaf_type == Json::ValueType::stringValue)
+        {
+            *current_value = *(static_cast<std::string *>(leaf_value));
+        }
+    }
+
 
     std::string GenericTopicListener::removeTopicFromVariableName(const std::string& variable_name)
     {
@@ -238,4 +229,5 @@ namespace readers
         return variable_name.substr(this->topic_name_.size() + 1,
                                     variable_name.size() - this->topic_name_.size());
     }
+
 }

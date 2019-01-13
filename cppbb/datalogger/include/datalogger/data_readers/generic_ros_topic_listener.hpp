@@ -34,6 +34,7 @@ namespace readers
 
         std::string getJsonDocument(const RosIntrospection::FlatMessage& flat_container,
                                     const RosIntrospection::RenamedValues& renamed_values);
+        void setLeafNode(const std::vector<std::string> &tree, Json::Value *current_value, void *leaf_value, Json::ValueType leaf_type);
         std::string removeTopicFromVariableName(const std::string& variable_name);
 
         std::shared_ptr<ros::Subscriber> subscriber_;
