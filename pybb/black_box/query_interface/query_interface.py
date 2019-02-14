@@ -16,6 +16,7 @@ class BlackBoxQueryInterface(RopodPyre):
         self.data_sources = data_sources
         self.black_box_id = black_box_id
         self.db_interface = DBInterface(db_name, db_port)
+        self.start()
 
     def zyre_event_cb(self, zyre_msg):
         '''Listens to "SHOUT" and "WHISPER" messages and returns a response
