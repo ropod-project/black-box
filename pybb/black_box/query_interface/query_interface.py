@@ -1,9 +1,9 @@
 import uuid
 import time
-from ropod.pyre_communicator.base_class import PyreBaseCommunicator
+from ropod.pyre_communicator.base_class import RopodPyre
 from black_box.query_interface.db_interface import DBInterface
 
-class BlackBoxQueryInterface(PyreBaseCommunicator):
+class BlackBoxQueryInterface(RopodPyre):
     '''An interface for querying a robotic black box
 
     @author -- Alex Mitrevski
