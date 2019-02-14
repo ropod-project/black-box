@@ -10,6 +10,7 @@ from black_box.datalogger.data_readers.json_zmq_reader import JsonZmqReader
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print('Usage: logger_main.py [absolute-path-to-black-box-config-file]')
+        sys.exit(1)
     bb_config_file = sys.argv[1]
 
     debug = False
