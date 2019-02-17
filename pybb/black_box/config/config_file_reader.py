@@ -34,6 +34,8 @@ class ConfigFileReader(object):
                 else:
                     print('default_parameters: split_database not specified; using default False')
             elif key == config_params.ConfigKeys.ROS:
+                params.ros = config_params.RosParams()
+
                 if 'ros_master_uri' in config_data:
                     params.ros.ros_master_uri = config_data['ros_master_uri']
                 else:
@@ -64,10 +66,20 @@ class ConfigFileReader(object):
                             print('ros: max_frequency not specified; using default {0}'.format(params.default.max_frequency))
                             topic_params.max_frequency = params.default.max_frequency
 
+                        if 'metadata' in topic_data:
+                            if 'ros' in topic_data['metadata']:
+                                ros_metadata = config_params.RosMetadataParams()
+                                ros_metadata.topic_name = topic_data['metadata']['ros']['topic_name']
+                                ros_metadata.msg_type = topic_data['metadata']['ros']['msg_type']
+                                ros_metadata.direct_msg_mapping = topic_data['metadata']['ros']['direct_msg_mapping']
+                                topic_params.metadata = ros_metadata
+
                         params.ros.topic.append(topic_params)
                 else:
                     raise Exception('ros: topics not specified')
             elif key == config_params.ConfigKeys.ZYRE:
+                params.zyre = config_params.ZyreParams()
+
                 if 'name' in config_data:
                     params.zyre.node_name = config_data['name']
                 else:
@@ -82,5 +94,43 @@ class ConfigFileReader(object):
                     params.zyre.message_types = config_data['message_types']
                 else:
                     raise Exception('zyre: message_types not specified')
+            elif key == config_params.ConfigKeys.ZMQ:
+                params.zmq = config_params.ZmqParams()
+
+                if 'publisher_url' in config_data:
+                    params.zmq.url = config_data['publisher_url']
+                else:
+                    raise Exception('zmq: publisher_url not specified')
+
+                if 'port' in config_data:
+                    params.zmq.port = config_data['port']
+                else:
+                    raise Exception('zmq: port not specified')
+
+                if 'topics' in config_data:
+                    for topic_data_group in config_data['topics']:
+                        topic_data = topic_data_group[next(iter(topic_data_group))]
+                        topic_params = config_params.ZmqTopicParams()
+
+                        if 'name' in topic_data:
+                            topic_params.name = topic_data['name']
+                        else:
+                            raise Exception('zmq: ZMQ topic name not specified')
+
+                        if 'max_frequency' in topic_data:
+                            topic_params.max_frequency = topic_data['max_frequency']
+                        else:
+                            print('zmq: max_frequency not specified; using default {0}'.format(params.default.max_frequency))
+                            topic_params.max_frequency = params.default.max_frequency
+
+                        if 'metadata' in topic_data:
+                            if 'ros' in topic_data['metadata']:
+                                ros_metadata = config_params.RosMetadataParams()
+                                ros_metadata.topic_name = topic_data['metadata']['ros']['topic_name']
+                                ros_metadata.msg_type = topic_data['metadata']['ros']['msg_type']
+                                ros_metadata.direct_msg_mapping = topic_data['metadata']['ros']['direct_msg_mapping']
+                                topic_params.metadata = ros_metadata
+
+                        params.zmq.topics.append(topic_params)
 
         return params
