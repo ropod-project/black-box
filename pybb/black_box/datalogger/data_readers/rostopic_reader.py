@@ -25,7 +25,7 @@ class ROSTopicReader(object):
         self.data_logger = data_logger
         self.listeners = []
         self.listeners_initialised = False
-        self.node_thread = []
+        self.nodes = []
         self.queue = Queue()
 
     def start(self):
@@ -51,7 +51,7 @@ class ROSTopicReader(object):
                         self.queue.put(topic_params.to_dict())
                         process = Process(target=self.__create_node, args=(self.queue,))
                         process.start()
-                        self.node_thread.append(process)
+                        self.nodes.append(process)
                     self.listeners_initialised = True
             rospy.sleep(sleep_time_s)
 
@@ -90,7 +90,7 @@ class ROSTopicReader(object):
         if self.listeners_initialised:
             for topic_params in self.config_params.topic:
                 rosnode.kill_nodes(self.node_handle_name + topic_params.name[1:])
-            for process in self.node_thread :
+            for process in self.nodes :
                 print(process.pid)
                 process.terminate()
 
