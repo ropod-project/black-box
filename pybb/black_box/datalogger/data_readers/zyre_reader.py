@@ -1,7 +1,7 @@
 import time
-from ropod.pyre_communicator.base_class import PyreBaseCommunicator
+from ropod.pyre_communicator.base_class import RopodPyre
 
-class ZyreReader(PyreBaseCommunicator):
+class ZyreReader(RopodPyre):
     '''An interface for managing ROS topic listeners.
 
     Constructor arguments:

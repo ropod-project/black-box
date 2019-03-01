@@ -1,0 +1,156 @@
+- default_parameters:
+    max_frequency: 30
+    # maximum database size in MB
+    max_database_size: 102400
+    # whether or not to create a new DB after max size is reached
+    split_database: false
+- zyre:
+    name: black_box_001
+    groups:
+        - ROPOD
+    message_types:
+        - CMD
+        - plan
+        - progress
+        - RobotPose2D
+- ros:
+    ros_master_uri: localhost
+    topics:
+        - topic:
+            name: /ropod/odom
+            type: nav_msgs/Odometry
+            variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
+            max_frequency: 5
+            metadata:
+                ros:
+                    topic_name: /ropod/odom
+                    msg_type: nav_msgs/Odometry
+                    direct_msg_mapping: true
+        - topic:
+            name: amcl_pose
+            type: geometry_msgs/PoseWithCovarianceStamped
+            variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, covariance]
+            max_frequency: 30
+            metadata:
+                ros:
+                    topic_name: amcl_pose
+                    msg_type: geometry_msgs/PoseWithCovarianceStamped
+                    direct_msg_mapping: true
+        - topic:
+            name: /ropod/laser/scan
+            type: sensor_msgs/LaserScan
+            variable_names: [frame_id, angle_min, angle_max, angle_increment, time_increment, scan_time, range_min, range_max, ranges]
+            max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: /ropod/laser/scan
+                    msg_type: sensor_msgs/LaserScan
+                    direct_msg_mapping: true
+        - topic:
+            name: /ropod/cmd_vel
+            type: geometry_msgs/Twist
+            variable_names: [linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /ropod/cmd_vel
+                    msg_type: geometry_msgs/Twist
+                    direct_msg_mapping: true
+        - topic:
+            name: /sw_ethercat_parser/data
+            type: ropod_ros_msgs/SmartWheelData
+            variable_names: [commands, sensors, working_count]
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /sw_ethercat_parser/data
+                    msg_type: ropod_ros_msgs/SmartWheelData
+                    direct_msg_mapping: true
+        - topic:
+            name: /load/cmd_vel
+            type: geometry_msgs/Twist
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /load/cmd_vel
+                    msg_type: geometry_msgs/Twist
+                    direct_msg_mapping: true
+       # - topic:
+       #     name: /route_navigation/goal
+       #     type: maneuver_navigation/Goal
+       #     variable_names: []
+       #     metadata:
+       #         ros:
+       #             topic_name: /route_navigation/goal
+       #             msg_type: maneuver_navigation/Goal
+       #             direct_msg_mapping: true
+        - topic:
+            name: /maneuver_navigation/goal_rviz
+            type: geometry_msgs/PoseStamped
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /maneuver_navigation/goal_rviz
+                    msg_type: geometry_msgs/PoseStamped
+                    direct_msg_mapping: true
+        # - topic:
+        #     name: /maneuver_navigation/local_costmap/costmap
+        #     type: nav_msgs/OccupancyGrid
+        #     variable_names: []
+        #     metadata:
+        #         ros:
+        #             topic_name: /maneuver_navigation/local_costmap/costmap
+        #             msg_type: nav_msgs/OccupancyGrid
+        #             direct_msg_mapping: true
+        - topic:
+            name: /tf
+            type: tf2_msgs/TFMessage
+            variable_names: []
+            max_frequency: 1500
+            metadata:
+                ros:
+                    topic_name: /tf
+                    msg_type: tf2_msgs/TFMessage
+                    direct_msg_mapping: true
+        - topic:
+            name: /move_base/TebLocalPlannerROS/global_plan
+            type: nav_msgs/Path
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /move_base/TebLocalPlannerROS/global_plan
+                    msg_type: nav_msgs/Path
+                    direct_msg_mapping: true
+        - topic:
+            name: /move_base/current_goal
+            type: geometry_msgs/PoseStamped
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /move_base/current_goal
+                    msg_type: geometry_msgs/PoseStamped
+                    direct_msg_mapping: true
+        - topic:
+            name: /move_base/local_costmap/costmap
+            type: nav_msgs/OccupancyGrid
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /move_base/local_costmap/costmap
+                    msg_type: nav_msgs/OccupancyGrid
+                    direct_msg_mapping: true
+        - topic:
+            name: /route_navigation/nav_waypoints
+            type: geometry_msgs/PoseArray
+            variable_names: []
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /route_navigation/nav_waypoints
+                    msg_type: geometry_msgs/PoseArray
+                    direct_msg_mapping: true

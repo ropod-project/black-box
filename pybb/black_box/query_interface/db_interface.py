@@ -1,5 +1,6 @@
 import pymongo as pm
 from black_box_tools.data_utils import DataUtils
+from black_box_tools.db_utils import DBUtils
 
 class DBInterface(object):
     '''An interface to a black box database
@@ -57,19 +58,8 @@ class DBInterface(object):
                            no upper bound for the timestamp of the retrieved data)
 
         '''
-        client = pm.MongoClient(port=self.db_port)
-        database = client[self.db_name]
-        collection = database[collection_name]
-
-        docs = {}
-        if start_time == -1 and end_time == -1:
-            docs = collection.find({})
-        elif start_time == -1:
-            docs = collection.find({'timestamp': {'$lte': end_time}})
-        elif end_time == -1:
-            docs = collection.find({'timestamp': {'$gte': start_time}})
-        else:
-            docs = collection.find({'timestamp': {'$gte': start_time, '$lte': end_time}})
+        docs = DBUtils.get_doc_cursor(
+                self.db_name, collection_name, start_time, end_time, self.db_port)
 
         var_data = {}
         var_full_names = {}

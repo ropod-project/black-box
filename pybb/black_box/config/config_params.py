@@ -22,6 +22,18 @@ class RosTopicParams(object):
         self.msg_type = ''
         self.max_frequency = 0
         self.metadata = None
+    def to_dict(self) :
+        return {'name': self.name, 
+                'msg_pkg' : self.msg_pkg,
+                'msg_type' : self.msg_type,
+                'max_frequency' : self.max_frequency,
+                'metadata' : self.metadata }
+    def from_dict(self, param_dict) :
+        self.name = param_dict['name']
+        self.msg_pkg = param_dict['msg_pkg']
+        self.msg_type = param_dict['msg_type']
+        self.max_frequency = param_dict['max_frequency']
+        self.metadata = param_dict['metadata']
 
 class RosParams(object):
     def __init__(self):

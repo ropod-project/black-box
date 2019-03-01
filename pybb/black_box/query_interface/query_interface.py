@@ -1,9 +1,9 @@
 import uuid
 import time
-from ropod.pyre_communicator.base_class import PyreBaseCommunicator
+from ropod.pyre_communicator.base_class import RopodPyre
 from black_box.query_interface.db_interface import DBInterface
 
-class BlackBoxQueryInterface(PyreBaseCommunicator):
+class BlackBoxQueryInterface(RopodPyre):
     '''An interface for querying a robotic black box
 
     @author -- Alex Mitrevski
@@ -16,6 +16,7 @@ class BlackBoxQueryInterface(PyreBaseCommunicator):
         self.data_sources = data_sources
         self.black_box_id = black_box_id
         self.db_interface = DBInterface(db_name, db_port)
+        self.start()
 
     def zyre_event_cb(self, zyre_msg):
         '''Listens to "SHOUT" and "WHISPER" messages and returns a response
