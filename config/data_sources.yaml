@@ -17,16 +17,6 @@
     ros_master_uri: localhost
     topics:
         - topic:
-            name: map
-            type: nav_msgs/OccupancyGrid
-            variable_names: []
-            max_frequency: 1
-            metadata:
-                ros:
-                    topic_name: map
-                    msg_type: nav_msgs/OccupancyGrid
-                    direct_msg_mapping: true
-        - topic:
             name: /ropod/odom
             type: nav_msgs/Odometry
             variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
