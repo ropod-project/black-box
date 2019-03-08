@@ -116,3 +116,13 @@
                     topic_name: /tf
                     msg_type: tf2_msgs/TFMessage
                     direct_msg_mapping: true
+        - topic:
+            name: /ropod/event
+            type: ropod_ros_msgs/Event
+            variable_names: []
+            max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: /ropod/event
+                    msg_type: ropod_ros_msgs/Event
+                    direct_msg_mapping: true
