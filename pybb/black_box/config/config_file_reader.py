@@ -33,6 +33,11 @@ class ConfigFileReader(object):
                     params.default.split_db = config_data['split_database']
                 else:
                     print('default_parameters: split_database not specified; using default False')
+
+                if 'db_name' in config_data:
+                    params.default.db_name = config_data['db_name']
+                else:
+                    print('default_parameters: db_name not specified; using default \"logs\"')
             elif key == config_params.ConfigKeys.ROS:
                 params.ros = config_params.RosParams()
 
