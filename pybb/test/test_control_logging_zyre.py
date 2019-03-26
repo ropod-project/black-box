@@ -63,16 +63,20 @@ class TestPyreCommunicator(RopodPyre):
         if 'header' not in dict_msg or 'type' not in dict_msg['header']:
             return None
         message_type = dict_msg['header']['type']
-        print(dict_msg)
+        # print(dict_msg)
 
 if __name__ == "__main__":
     pyre_comm = TestPyreCommunicator(['ROPOD'], 'black_box_001')
     test_start_time = time.time()
-    test_duration = 5
+    test_duration = 10
     print("Testing ... (for", test_duration, "seconds)")
     try:
-        n = 0
+        pyre_comm.send_request("BLACK-BOX_LOGGING_CMD", {'cmd':"STOP"})
+        while test_start_time + test_duration > time.time():
+            time.sleep(0.1)
+
         pyre_comm.send_request("BLACK-BOX_LOGGING_CMD", {'cmd':"START"})
+        test_start_time = time.time()
         while test_start_time + test_duration > time.time():
             time.sleep(0.1)
         pyre_comm.send_request("BLACK-BOX_LOGGING_CMD", {'cmd':"STOP"})

@@ -17,7 +17,7 @@ class BlackBoxPyreCommunicator(RopodPyre):
     def __init__(self, groups, black_box_id):
         super(BlackBoxPyreCommunicator, self).__init__(
                 'bb_pyre_comm'+black_box_id, groups, list(), verbose=True)
-        self.logging = False
+        self.logging = True
         self.black_box_id = black_box_id
         self.start()
 
