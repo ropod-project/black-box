@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import sys
+import time
 
 from black_box.config.config_file_reader import ConfigFileReader
 from black_box.datalogger.loggers.mongodb_logger import MongoDBLogger
 from black_box.datalogger.data_readers.rostopic_reader import ROSTopicReader
 from black_box.datalogger.data_readers.zyre_reader import ZyreReader
 from black_box.datalogger.data_readers.json_zmq_reader import JsonZmqReader
+from black_box.datalogger.pyre_comm.bb_pyre_comm import BlackBoxPyreCommunicator
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -21,7 +23,7 @@ if __name__ == '__main__':
     if debug:
         print(config_params)
 
-    logger = MongoDBLogger(db_name='logs', db_port=27017,
+    logger = MongoDBLogger(db_name=config_params.default.db_name, db_port=27017,
                            split_db=config_params.default.split_db,
                            max_db_size=config_params.default.max_db_size)
     logger.write_metadata(config_params)
@@ -44,19 +46,47 @@ if __name__ == '__main__':
                                          config_params.default.max_frequency,
                                          logger)
 
-    try:
-        # this output is before starting the ROS topic reader
-        # because that one will block the execution
-        print('[{0}] Logger configured; ready to log data'.format(config_params.zyre.node_name))
+    bb_pyre_comm = BlackBoxPyreCommunicator(['ROPOD'], config_params.zyre.node_name)
 
+    try:
         if json_zmq_reader:
             json_zmq_reader.start()
 
         if rostopic_reader:
             rostopic_reader.start()
+
+        print('[{0}] Logger configured; ready to log data'.format(config_params.zyre.node_name))
+        logging = False
+        while True:
+            if logging != bb_pyre_comm.logging:
+                if bb_pyre_comm.logging:
+                    if json_zmq_reader:
+                        json_zmq_reader.start()
+
+                    if rostopic_reader:
+                        rostopic_reader.start()
+                    print('[{0}] Started logging'.format(config_params.zyre.node_name))
+                else:
+                    if rostopic_reader:
+                        rostopic_reader.stop()
+
+                    if json_zmq_reader:
+                        json_zmq_reader.stop()
+                    print('[{0}] Stopped logging'.format(config_params.zyre.node_name))
+                if zyre_reader:
+                    zyre_reader.logging = bb_pyre_comm.logging
+                logging = bb_pyre_comm.logging
+
+            time.sleep(0.1)
     except (KeyboardInterrupt, SystemExit):
+        print('[logger_main] Interrupted. Exiting...')
         if zyre_reader:
             zyre_reader.shutdown()
 
         if rostopic_reader:
             rostopic_reader.stop()
+
+        if json_zmq_reader:
+            json_zmq_reader.stop()
+
+        bb_pyre_comm.shutdown()

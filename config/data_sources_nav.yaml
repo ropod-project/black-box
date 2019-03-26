@@ -4,6 +4,7 @@
     max_database_size: 102400
     # whether or not to create a new DB after max size is reached
     split_database: false
+    db_name: 'test_logs'
 - zyre:
     name: black_box_001
     groups:

@@ -14,6 +14,7 @@ class DefaultParams(object):
         self.max_frequency = 0
         self.max_db_size = 0
         self.split_db = False
+        self.db_name = 'logs'
 
 class RosTopicParams(object):
     def __init__(self):
