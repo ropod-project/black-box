@@ -23,7 +23,7 @@ class EventReader(object):
         self.logging = False
         self.listener_classes = self.get_listener_classes()
 
-    def start(self):
+    def start_logging(self):
         '''Initialise and start the listeners
         '''
         self.logging = True
@@ -39,7 +39,7 @@ class EventReader(object):
             listener.start()
         print('[EventReader] All Listener started')
 
-    def stop(self):
+    def stop_logging(self):
         '''Stops all listeners 
         '''
         self.logging = False

@@ -21,17 +21,12 @@ class RosparamListener(EventListenerBase):
             current_ros_param = self.get_current_ros_params_as_dict()
             if self._last_logged_ros_param is None or \
                     self._last_logged_ros_param != current_ros_param:
-                # print(self._last_logged_ros_param, current_ros_param)
-                # print(time.time(), self)
-                # print(self._last_logged_ros_param == current_ros_param)
                 self.data_logger.log_data(
                         self.name, 
                         time.time(), 
                         {'rosparam':current_ros_param})
                 self._last_logged_ros_param = current_ros_param
-                # print(self._last_logged_ros_param, current_ros_param)
             time.sleep(self.sleep_time)
-            # time.sleep(0.5)
 
     def get_current_ros_params_as_dict(self):
         """Get all ros parameters and return them as a dictionary object

@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     pyre_comm = TestPyreCommunicator(['ROPOD'], 'black_box_001')
     test_start_time = time.time()
-    test_duration = 10
+    test_duration = 5
     print("Testing ... (for", test_duration, "seconds)")
     try:
         # First test case
@@ -110,8 +110,8 @@ if __name__ == "__main__":
             if newest_timestamp < time.time():
                 print("Stop test successfull")
             time.sleep(0.2)
-    except Exception as e:
-        print("Encountered following error", str(e))
+    except (KeyboardInterrupt, SystemExit):
+        # print("Encountered following error", str(e))
         pass
         # print("Test FAILED", str(e))
     pyre_comm.shutdown()

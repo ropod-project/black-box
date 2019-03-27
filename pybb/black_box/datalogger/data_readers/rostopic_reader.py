@@ -31,7 +31,7 @@ class ROSTopicReader(object):
         self.sub_thread = None
         self.logging = False
 
-    def start(self):
+    def start_logging(self):
         '''Starts and runs the subscribers on a background thread.
         '''
         if self.sub_thread is None:
@@ -39,7 +39,7 @@ class ROSTopicReader(object):
             self.logging = True
             self.sub_thread.start()
 
-    def stop(self):
+    def stop_logging(self):
         '''Stops all topic listeners and kills the listener node.
         '''
         self.__terminate_node()
@@ -113,7 +113,7 @@ class ROSTopicReader(object):
         print('[rostopic_reader] Terminating all child processes')
         if self.listeners_initialised:
             node_names = [ConfigUtils.get_full_variable_name("ros_logger", topic_params.name) for topic_params in self.config_params.topic]
-            rosnode.kill_nodes(node_names)
+            kill_status = rosnode.kill_nodes(node_names)
             for process in self.nodes :
                 process.terminate()
 

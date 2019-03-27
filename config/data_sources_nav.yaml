@@ -4,12 +4,15 @@
     max_database_size: 102400
     # whether or not to create a new DB after max size is reached
     split_database: false
-    db_name: 'logs'
+    db_name: 'test_logs'
 - event:
     listeners:
         - listener:
-            name: rosparam
+            name: test
             event_type: 'CHANGE'
+        # - listener:
+        #     name: rosparam
+        #     event_type: 'CHANGE'
 - zyre:
     name: black_box_001
     groups:
