@@ -4,10 +4,12 @@ import time
 
 from black_box.config.config_file_reader import ConfigFileReader
 from black_box.datalogger.loggers.mongodb_logger import MongoDBLogger
+from black_box.datalogger.pyre_comm.bb_pyre_comm import BlackBoxPyreCommunicator
+
 from black_box.datalogger.data_readers.rostopic_reader import ROSTopicReader
 from black_box.datalogger.data_readers.zyre_reader import ZyreReader
 from black_box.datalogger.data_readers.json_zmq_reader import JsonZmqReader
-from black_box.datalogger.pyre_comm.bb_pyre_comm import BlackBoxPyreCommunicator
+from black_box.datalogger.data_readers.event_reader import EventReader
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -46,6 +48,12 @@ if __name__ == '__main__':
                                          config_params.default.max_frequency,
                                          logger)
 
+    event_reader = None
+    if config_params.event:
+        event_reader = EventReader(config_params.event,
+                                     config_params.default.max_frequency,
+                                     logger)
+
     bb_pyre_comm = BlackBoxPyreCommunicator(['ROPOD'], config_params.zyre.node_name)
 
     try:
@@ -55,8 +63,11 @@ if __name__ == '__main__':
         if rostopic_reader:
             rostopic_reader.start()
 
+        if event_reader:
+            event_reader.start()
+
         print('[{0}] Logger configured; ready to log data'.format(config_params.zyre.node_name))
-        logging = False
+        logging = True
         while True:
             if logging != bb_pyre_comm.logging:
                 if bb_pyre_comm.logging:
@@ -65,6 +76,9 @@ if __name__ == '__main__':
 
                     if rostopic_reader:
                         rostopic_reader.start()
+
+                    if event_reader:
+                        event_reader.start()
                     print('[{0}] Started logging'.format(config_params.zyre.node_name))
                 else:
                     if rostopic_reader:
@@ -72,6 +86,9 @@ if __name__ == '__main__':
 
                     if json_zmq_reader:
                         json_zmq_reader.stop()
+
+                    if event_reader:
+                        event_reader.stop()
                     print('[{0}] Stopped logging'.format(config_params.zyre.node_name))
                 if zyre_reader:
                     zyre_reader.logging = bb_pyre_comm.logging
@@ -89,4 +106,6 @@ if __name__ == '__main__':
         if json_zmq_reader:
             json_zmq_reader.stop()
 
+        if event_reader:
+            event_reader.stop()
         bb_pyre_comm.shutdown()
