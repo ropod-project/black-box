@@ -137,5 +137,34 @@ class ConfigFileReader(object):
                                 topic_params.metadata = ros_metadata
 
                         params.zmq.topics.append(topic_params)
+            elif key == config_params.ConfigKeys.EVENT:
+                params.event = config_params.EventParams()
+
+                if 'listeners' in config_data:
+                    for listener_data_group in config_data['listeners']:
+                        listener_data = listener_data_group[next(iter(listener_data_group))]
+                        listener_params = config_params.EventListenerParams()
+
+                        if 'name' in listener_data:
+                            listener_params.name = listener_data['name']
+                        else:
+                            raise Exception('event: Event listener name not specified')
+
+                        if 'event_type' in listener_data:
+                            if listener_data['event_type'] in ['CHANGE']:
+                                listener_params.event_type = listener_data['event_type']
+                            else:
+                                raise Exception('event: event_type not recongnised for {0}'.format(listener_data['name']))
+
+                        else:
+                            raise Exception('event: event_type not specified for {0}'.format(listener_data['name']))
+
+                        if 'max_frequency' in listener_data:
+                            listener_params.max_frequency = listener_data['max_frequency']
+                        else:
+                            print('event: max_frequency not specified; using default {0}'.format(params.default.max_frequency))
+                            listener_params.max_frequency = params.default.max_frequency
+
+                        params.event.listeners.append(listener_params)
 
         return params
