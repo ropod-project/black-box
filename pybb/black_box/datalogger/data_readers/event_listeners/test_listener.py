@@ -18,9 +18,7 @@ class TestListener(EventListenerBase):
 
     def run(self):
         while self.logging:
-            # keys = rospy.get_param_names()
-            keys = rospy.get_published_topics()
-            print(keys)
+            keys = rospy.get_param_names()
             if self._last_logged_msg is None or \
                     self._last_logged_msg + 1 < time.time():
                 self.data_logger.log_data(
