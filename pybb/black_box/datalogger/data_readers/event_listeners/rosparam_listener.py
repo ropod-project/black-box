@@ -17,7 +17,7 @@ class RosparamListener(EventListenerBase):
         self._last_logged_ros_param = None
 
     def run(self):
-        time.sleep(2)
+        time.sleep(2) # hack (this makes rostopic_reader start up properly)
         while self.logging:
             current_ros_param = self.get_current_ros_params_as_dict()
             if self._last_logged_ros_param is None or \

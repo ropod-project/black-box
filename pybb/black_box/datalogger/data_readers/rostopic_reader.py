@@ -92,7 +92,9 @@ class ROSTopicReader(object):
         initialises listeners for the topics in "self.config_params.topic",
         and blocks the execution (expected to be run as a background process).
 
-        @param queue -- a queue object to get the parameters from parent process
+        @param queue -- Queue obj (to get the parameters from parent process)
+        @param stop_queue -- Queue obj (to signal stopping the rosnode)
+
         '''
         topic_params_dict = queue.get()
         topic_params = RosTopicParams()
@@ -100,32 +102,30 @@ class ROSTopicReader(object):
         self.new_handle_name = ConfigUtils.get_full_variable_name("ros_logger", 
                                                                  topic_params.name)
         rospy.init_node(self.new_handle_name)
-        print('[rostopic_reader] {0} initialised'.format(self.new_handle_name))
         self.listener = ROSTopicListener(topic_params.name,
                                         topic_params.msg_pkg,
                                         topic_params.msg_type,
                                         topic_params.max_frequency,
                                         self.data_logger)
         self.listener.start()
+        print('[rostopic_reader] {0} initialised'.format(self.new_handle_name))
         try:
             while stop_queue.empty():
-                rospy.sleep(1)
+                rospy.sleep(0.2)
         except Exception as e:
-            print("Encountered error", str(e))
+            # print("[rostopic_reader] Encountered error", str(e))
+            pass
         self.listener.shutdown()
-        rospy.signal_shutdown("Logging was stopped")
+        rospy.signal_shutdown("Blackbox logging was stopped.")
         print('[rostopic_reader] {0} terminated'.format(self.new_handle_name))
 
     def __terminate_node(self):
         print('[rostopic_reader] Terminating all child processes')
         if self.listeners_initialised:
-            node_names = [ConfigUtils.get_full_variable_name("ros_logger", topic_params.name) for topic_params in self.config_params.topic]
-
-            self.stop_queue.put(True)
-
+            self.stop_queue.put(True) # make stop_queue non empty
             for process in self.nodes :
                 process.join()
-            while not self.stop_queue.empty():
+            while not self.stop_queue.empty(): # make stop_queue empty again
                 self.stop_queue.get()
 
     def __is_master_running(self):
