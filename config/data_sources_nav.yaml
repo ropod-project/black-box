@@ -5,6 +5,16 @@
     # whether or not to create a new DB after max size is reached
     split_database: false
     db_name: 'test_logs'
+- event:
+    listeners:
+        # - listener:
+        #     name: test
+        #     event_type: 'CHANGE'
+        #     max_frequency: 1
+        - listener:
+            name: rosparam
+            event_type: 'CHANGE'
+            max_frequency: 2
 - zyre:
     name: black_box_001
     groups:

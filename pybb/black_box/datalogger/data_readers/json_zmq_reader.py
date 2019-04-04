@@ -37,7 +37,7 @@ class JsonZmqReader(object):
         self.sub_thread = None
         self.subscriber_running = False
 
-    def start(self):
+    def start_logging(self):
         '''Starts a ZMQ subscriber socket and runs the subscriber on a background thread.
         '''
         if not self.sub_thread:
@@ -48,7 +48,7 @@ class JsonZmqReader(object):
             self.subscriber_running = True
             self.sub_thread.start()
 
-    def stop(self):
+    def stop_logging(self):
         '''Stops the subscriber thread.
         '''
         if self.sub_thread:
