@@ -2,7 +2,6 @@ import importlib
 from black_box.config.config_params import EventListenerParams
 from black_box.config.config_utils import ConfigUtils
 from black_box.datalogger.data_readers.event_listeners.event_listener_base import EventListenerBase
-# from black_box.datalogger.data_readers.event_listeners.rosparam_listener import ROSParamListener
 
 class EventReader(object):
     '''An interface for managing event listeners
