@@ -27,3 +27,13 @@
                     topic_name: /ropod/laser/scan
                     msg_type: sensor_msgs/LaserScan
                     direct_msg_mapping: true
+        - topic:
+            name: /ropod/cmd_vel
+            type: geometry_msgs/Twist
+            variable_names: [linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /ropod/cmd_vel
+                    msg_type: geometry_msgs/Twist
+                    direct_msg_mapping: true
