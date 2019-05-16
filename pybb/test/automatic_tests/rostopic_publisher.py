@@ -5,10 +5,10 @@ import rospy
 
 from black_box.config.config_utils import ConfigUtils
 
-class TopicPublisher(object):
+class RosTopicPublisher(object):
 
-    """Publish a particular topic for a definite amount of time with a certain 
-    frequency or for a definite number of times.
+    """Publish a particular topic for a definite number of times with a certain 
+    frequency.
     :topic_name: string (topic where the message needs to be published)
     :msg_pkg: string (package from where the msg type can be imported)
     :msg_type: string (type of message to be published)
@@ -33,7 +33,7 @@ class TopicPublisher(object):
         self.msg_class = getattr(msg_module, self.msg_type)
         self.publisher = rospy.Publisher(self.topic_name, self.msg_class, queue_size=1)
 
-    def start(self):
+    def start_publishing(self):
         '''publish empty messages.
         '''
         self.publishing = True
@@ -49,9 +49,9 @@ if __name__ == "__main__":
     topic_name = '/ropod/laser/scan'
 
     rospy.init_node(ConfigUtils.get_full_variable_name('topic_publisher', topic_name))
-    topic_pub = TopicPublisher(
+    topic_pub = RosTopicPublisher(
             topic_name,
             'sensor_msgs.msg', 
             'LaserScan', 
             num_of_msgs=100)
-    topic_pub.start()
+    topic_pub.start_publishing()
