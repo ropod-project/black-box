@@ -1,3 +1,6 @@
+#! /usr/bin/env python3
+"""This module publishes ros topic for a specific num of times.  """
+
 from __future__ import print_function
 
 from importlib import import_module
@@ -5,9 +8,9 @@ import rospy
 
 from black_box.config.config_utils import ConfigUtils
 
-class RosTopicPublisher(object):
+class RosTopicPublisher():
 
-    """Publish a particular topic for a definite number of times with a certain 
+    """Publish a particular topic for a definite number of times with a certain
     frequency.
     :topic_name: string (topic where the message needs to be published)
     :msg_pkg: string (package from where the msg type can be imported)
@@ -18,18 +21,17 @@ class RosTopicPublisher(object):
     :max_frequency: float (how many msgs should be be published in a second)
     """
 
-    def __init__(self, topic_name, msg_pkg, msg_type, *args, **kwargs):
+    def __init__(self, topic_name, msg_pkg, msg_type, **kwargs):
         # class variables
         self.topic_name = topic_name
-        self.msg_pkg = msg_pkg
         self.msg_type = msg_type
         self.num_of_msgs = kwargs.get('num_of_msgs', 10)
         self.sleep_time = 1.0/kwargs.get('max_frequency', 10)
         self.publishing = False
 
         # creating publisher
-        rospy.loginfo('Starting publisher of ' + self.topic_name)
-        msg_module = import_module(self.msg_pkg)
+        rospy.loginfo('Starting publisher of %s', self.topic_name)
+        msg_module = import_module(msg_pkg)
         self.msg_class = getattr(msg_module, self.msg_type)
         self.publisher = rospy.Publisher(self.topic_name, self.msg_class, queue_size=1)
 
@@ -37,21 +39,21 @@ class RosTopicPublisher(object):
         '''publish empty messages.
         '''
         self.publishing = True
-        for i in range(self.num_of_msgs):
+        for _ in range(self.num_of_msgs):
             if rospy.is_shutdown() or not self.publishing:
                 break
             msg = self.msg_class()
             self.publisher.publish(msg)
             rospy.sleep(self.sleep_time)
         self.publishing = False
-        
-if __name__ == "__main__":
-    topic_name = '/ropod/laser/scan'
 
-    rospy.init_node(ConfigUtils.get_full_variable_name('topic_publisher', topic_name))
-    topic_pub = RosTopicPublisher(
-            topic_name,
-            'sensor_msgs.msg', 
-            'LaserScan', 
-            num_of_msgs=100)
-    topic_pub.start_publishing()
+if __name__ == "__main__":
+    TOPIC_NAME = '/ropod/laser/scan'
+
+    rospy.init_node(ConfigUtils.get_full_variable_name('topic_publisher', TOPIC_NAME))
+    TOPIC_PUB = RosTopicPublisher(
+        TOPIC_NAME,
+        'sensor_msgs.msg',
+        'LaserScan',
+        num_of_msgs=100)
+    TOPIC_PUB.start_publishing()

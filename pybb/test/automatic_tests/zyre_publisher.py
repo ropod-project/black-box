@@ -1,13 +1,13 @@
+#! /usr/bin/env python3
+"""This module published zyre message of a specific type for specific num of times."""
+
 from __future__ import print_function
 
 import time
-import json
 import uuid
 
 from ropod.utils.uuid import generate_uuid
 from ropod.pyre_communicator.base_class import RopodPyre
-
-from black_box.config.config_utils import ConfigUtils
 
 class ZyrePublisher(RopodPyre):
 
@@ -20,9 +20,10 @@ class ZyrePublisher(RopodPyre):
     :max_frequency: float (how many msgs should be be published in a second)
     """
 
-    def __init__(self, msg_type, groups, *args, **kwargs):
+    def __init__(self, msg_type, groups, **kwargs):
         super(ZyrePublisher, self).__init__(
-                'zyre_publisher_automatic_test_'+msg_type, groups, list(), verbose=False, acknowledge=False)
+            'zyre_publisher_automatic_test_'+msg_type, groups, list(),
+            verbose=False, acknowledge=False)
         self.msg_type = msg_type
         self.num_of_msgs = kwargs.get('num_of_msgs', 10)
         self.sleep_time = 1.0/kwargs.get('max_frequency', 10)
@@ -34,7 +35,7 @@ class ZyrePublisher(RopodPyre):
         '''
         self.publishing = True
         print('Started', self.msg_type, 'zyre publisher')
-        for i in range(self.num_of_msgs):
+        for _ in range(self.num_of_msgs):
             if not self.publishing:
                 break
             self._send_request(self.msg_type)
@@ -43,7 +44,7 @@ class ZyrePublisher(RopodPyre):
         print('before shutdown')
         self.shutdown()
         print('after shutdown')
-        
+
     def _send_request(self, msg_type, payload_dict=None):
         request_msg = dict()
         request_msg['header'] = dict()
@@ -54,8 +55,8 @@ class ZyrePublisher(RopodPyre):
 
         request_msg['payload'] = dict()
         request_msg['payload']['senderId'] = generate_uuid()
-        if payload_dict is not None :
-            for key in payload_dict.keys() :
+        if payload_dict is not None:
+            for key in payload_dict.keys():
                 request_msg['payload'][key] = payload_dict[key]
 
         # print(json.dumps(request_msg, indent=2, default=str))
@@ -63,9 +64,9 @@ class ZyrePublisher(RopodPyre):
         self.shout(request_msg)
 
 if __name__ == "__main__":
-    zyre_pub = ZyrePublisher('CMD', ['ROPOD'], num_of_msgs=100)
+    ZYRE_PUB = ZyrePublisher('CMD', ['ROPOD'], num_of_msgs=100)
 
     print('publishing')
-    zyre_pub.start_publishing()
+    ZYRE_PUB.start_publishing()
 
     print('published')

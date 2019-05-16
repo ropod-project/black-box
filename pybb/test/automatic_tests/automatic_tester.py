@@ -1,18 +1,23 @@
+#! /usr/bin/env python3
+"""This module is a test which reads config file and creates publishers accordingly.
+After all publisher finishes publishing, it checks if blackbox was able to log
+all the messages or not and prints status."""
+
+from __future__ import print_function
 import threading
-import rospy
 import sys
 import psutil
+import rospy
 from termcolor import colored
 
 from rostopic_publisher import RosTopicPublisher
 from zyre_publisher import ZyrePublisher
 
 from black_box.config.config_file_reader import ConfigFileReader
-from black_box.config.config_params import RosTopicParams
 from black_box.config.config_utils import ConfigUtils
 from black_box_tools.db_utils import DBUtils
 
-class AutomaticTester(object):
+class AutomaticTester():
     '''An interface to manage all publishers
 
     Constructor arguments:
@@ -32,12 +37,12 @@ class AutomaticTester(object):
             for topic_params in self.config_params.ros.topic:
                 num_of_msgs = self.duration * topic_params.max_frequency
                 publisher = RosTopicPublisher(
-                        topic_params.name,
-                        topic_params.msg_pkg,
-                        topic_params.msg_type,
-                        num_of_msgs=num_of_msgs,
-                        max_frequency=topic_params.max_frequency,
-                        )
+                    topic_params.name,
+                    topic_params.msg_pkg,
+                    topic_params.msg_type,
+                    num_of_msgs=num_of_msgs,
+                    max_frequency=topic_params.max_frequency,
+                    )
                 pub_thread = threading.Thread(target=publisher.start_publishing)
                 self.publishers.append(publisher)
                 self.publisher_threads.append(pub_thread)
@@ -46,11 +51,11 @@ class AutomaticTester(object):
             for message_type in self.config_params.zyre.message_types:
                 num_of_msgs = self.duration * self.config_params.default.max_frequency
                 publisher = ZyrePublisher(
-                        message_type,
-                        self.config_params.zyre.groups,
-                        num_of_msgs=num_of_msgs,
-                        max_frequency=self.config_params.default.max_frequency
-                        )
+                    message_type,
+                    self.config_params.zyre.groups,
+                    num_of_msgs=num_of_msgs,
+                    max_frequency=self.config_params.default.max_frequency
+                    )
                 pub_thread = threading.Thread(target=publisher.start_publishing)
                 self.publishers.append(publisher)
                 self.publisher_threads.append(pub_thread)
@@ -105,9 +110,9 @@ def check_logs(config_params, test_duration):
                 continue
             collection_size = len(DBUtils.get_all_docs(db_name, topic_name))
             size_status.append({
-                    'collection': topic_name,
-                    'expected_size':topic_params.max_frequency*test_duration,
-                    'collection_size':collection_size})
+                'collection': topic_name,
+                'expected_size':topic_params.max_frequency*test_duration,
+                'collection_size':collection_size})
     if config_params.zyre:
         expected_size = test_duration * config_params.default.max_frequency
         for message_type in config_params.zyre.message_types:
@@ -122,39 +127,41 @@ def check_logs(config_params, test_duration):
                 continue
             collection_size = len(DBUtils.get_all_docs(db_name, topic_name))
             size_status.append({
-                    'collection': topic_name,
-                    'expected_size': expected_size,
-                    'collection_size': collection_size})
+                'collection': topic_name,
+                'expected_size': expected_size,
+                'collection_size': collection_size})
     if not fail:
         print(colored("All topics have their respective collection in mongoDB", "green"))
     for comparison in size_status:
         color = "green" if comparison['expected_size'] == comparison['collection_size'] else "red"
-        string = comparison['collection'] + ': ' + str(comparison['collection_size']) + '/' + str(comparison['expected_size'])
+        string = comparison['collection'] + ': ' + str(comparison['collection_size']) \
+                + '/' + str(comparison['expected_size'])
         print(colored(string, color))
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print('Usage: python3 automatic_tester.py [absolute-path-to-black-box-config-file]')
         sys.exit(1)
-    bb_config_file = sys.argv[1]
+    BB_CONFIG_FILE = sys.argv[1]
 
-    test_duration = 20 #seconds
+    TEST_DURATION = 20 #seconds
 
     # only proceed if black box is running
     if not is_bb_running():
-        print('Blackbox is not running. Please make sure it is running before executing this test script.')
+        print('Blackbox is not running. Please make sure it is running before',
+              'executing this test script.')
         sys.exit(1)
-    
-    config_params = ConfigFileReader.load_config(bb_config_file)
-    DBUtils.clear_db(config_params.default.db_name)
 
-    tester = AutomaticTester(config_params, test_duration)
+    CONFIG_PARAMS = ConfigFileReader.load_config(BB_CONFIG_FILE)
+    DBUtils.clear_db(CONFIG_PARAMS.default.db_name)
+
+    TESTER = AutomaticTester(CONFIG_PARAMS, TEST_DURATION)
     print("initialised all publisher")
 
-    tester.start()
+    TESTER.start()
     print("publishers running")
 
-    tester.stop()
+    TESTER.stop()
     print("publishers stopped")
 
-    check_logs(config_params, test_duration)
+    check_logs(CONFIG_PARAMS, TEST_DURATION)
