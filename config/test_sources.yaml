@@ -1,5 +1,5 @@
 - default_parameters:
-    max_frequency: 30
+    max_frequency: 10
     # maximum database size in MB
     max_database_size: 102400
     # whether or not to create a new DB after max size is reached
