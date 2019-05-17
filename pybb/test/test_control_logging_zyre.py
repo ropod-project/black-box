@@ -8,7 +8,6 @@ import uuid
 import sys
 
 from ropod.pyre_communicator.base_class import RopodPyre
-from ropod.utils.models import MessageFactory
 from ropod.utils.uuid import generate_uuid
 from black_box.config.config_file_reader import ConfigFileReader
 from black_box_tools.db_utils import DBUtils

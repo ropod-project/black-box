@@ -25,6 +25,7 @@ class ZyreReader(RopodPyre):
         self.variable_names = {}
         for message_type in self.config_params.message_types:
             self.variable_names[message_type] = '{0}_{1}'.format(interface_name, message_type)
+        self.start()
 
     def start_logging(self):
         self.logging = True
