@@ -20,12 +20,22 @@ class ZyreReader(RopodPyre):
                                          message_types=config_params.message_types)
         self.config_params = config_params
         self.data_logger = data_logger
+        self.logging = False
 
         self.variable_names = {}
         for message_type in self.config_params.message_types:
             self.variable_names[message_type] = '{0}_{1}'.format(interface_name, message_type)
+        self.start()
+
+    def start_logging(self):
+        self.logging = True
+
+    def stop_logging(self):
+        self.logging = False
 
     def receive_msg_cb(self, msg_content):
+        if not self.logging:
+            return
         dict_msg = self.convert_zyre_msg_to_dict(msg_content)
         if dict_msg is None:
             return

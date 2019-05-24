@@ -4,6 +4,12 @@
     max_database_size: 102400
     # whether or not to create a new DB after max size is reached
     split_database: false
+    db_name: 'logs'
+- event:
+    listeners:
+        - listener:
+            name: rosparam
+            event_type: 'CHANGE'
 - zyre:
     name: black_box_001
     groups:
@@ -17,20 +23,10 @@
     ros_master_uri: localhost
     topics:
         - topic:
-            name: map
-            type: nav_msgs/OccupancyGrid
-            variable_names: []
-            max_frequency: 1
-            metadata:
-                ros:
-                    topic_name: map
-                    msg_type: nav_msgs/OccupancyGrid
-                    direct_msg_mapping: true
-        - topic:
             name: /ropod/odom
             type: nav_msgs/Odometry
             variable_names: [position/x, position/y, position/z, orientation/x, orientation/y, orientation/z, orientation/w, linear/x, linear/y, linear/z, angular/x, angular/y, angular/z]
-            max_frequency: 5
+            max_frequency: 10
             metadata:
                 ros:
                     topic_name: /ropod/odom
@@ -50,7 +46,7 @@
             name: /ropod/laser/scan
             type: sensor_msgs/LaserScan
             variable_names: [frame_id, angle_min, angle_max, angle_increment, time_increment, scan_time, range_min, range_max, ranges]
-            max_frequency: 1
+            max_frequency: 10
             metadata:
                 ros:
                     topic_name: /ropod/laser/scan
@@ -70,7 +66,7 @@
             name: /sw_ethercat_parser/data
             type: ropod_ros_msgs/SmartWheelData
             variable_names: [commands, sensors, working_count]
-            max_frequency: 10
+            max_frequency: 30
             metadata:
                 ros:
                     topic_name: /sw_ethercat_parser/data
@@ -120,9 +116,19 @@
             name: /tf
             type: tf2_msgs/TFMessage
             variable_names: []
-            max_frequency: 1
+            max_frequency: 150
             metadata:
                 ros:
                     topic_name: /tf
                     msg_type: tf2_msgs/TFMessage
+                    direct_msg_mapping: true
+        - topic:
+            name: /ropod/event
+            type: ropod_ros_msgs/Event
+            variable_names: []
+            max_frequency: 1
+            metadata:
+                ros:
+                    topic_name: /ropod/event
+                    msg_type: ropod_ros_msgs/Event
                     direct_msg_mapping: true

@@ -1,4 +1,5 @@
 from multiprocessing import Process, Queue
+import threading
 import rospy
 import rosnode
 from black_box.datalogger.data_readers.rostopic_listener import ROSTopicListener
@@ -27,17 +28,45 @@ class ROSTopicReader(object):
         self.listeners_initialised = False
         self.nodes = []
         self.queue = Queue()
+        self.stop_queue = Queue()
+        self.sub_thread = None
+        self.logging = False
 
-    def start(self):
+    def start_logging(self):
+        '''Starts and runs the subscribers on a background thread.
+        '''
+        if self.sub_thread is None:
+            self.sub_thread = threading.Thread(target=self.__log_msg)
+            self.logging = True
+            self.sub_thread.start()
+
+    def stop_logging(self):
+        '''Stops all topic listeners and kills the listener node.
+        '''
+        self.__terminate_node()
+        self.logging = False
+        if self.sub_thread is not None:
+            self.sub_thread.join()
+        self.sub_thread = None
+        self.listeners = []
+        self.listeners_initialised = False
+        self.nodes = []
+        print('[rostopic_reader] Stopping ros logging')
+
+    def __log_msg(self, **kwargs):
         '''Sleeps for (1. / self.max_frequency) until interrupted. Implements
         a recovery behaviour for dealing with a ROS master that has not been
         started yet or that dies during the execution, namely waits until
         there is no master and (re)initialises the listener when the master comes up.
         If the master is working and listeners are not initialised then a process
         for each rostopic is started.
+
+        :**kwargs: dict
+        :returns: None
+
         '''
         sleep_time_s = 1. / self.max_frequency
-        while not rospy.is_shutdown():
+        while self.logging:
             if not self.__is_master_running():
                 print('[rostopic_reader] The ROS master appears to have died or has not been started...')
                 self.__terminate_node()
@@ -49,50 +78,55 @@ class ROSTopicReader(object):
                     print('[rostopic_reader] Connection with ROS master established')
                     for topic_params in self.config_params.topic:
                         self.queue.put(topic_params.to_dict())
-                        process = Process(target=self.__create_node, args=(self.queue,))
+                        process = Process(
+                                target=self.__create_node, 
+                                args=(self.queue, self.stop_queue,),
+                                name=topic_params.name)
                         process.start()
                         self.nodes.append(process)
                     self.listeners_initialised = True
             rospy.sleep(sleep_time_s)
 
-    def stop(self):
-        '''Stops all topic listeners and kills the listener node.
-        '''
-        self.__terminate_node()
-
-    def __create_node(self, queue):
+    def __create_node(self, queue, stop_queue):
         '''Starts a ROS node with the name "self.node_handle_name",
         initialises listeners for the topics in "self.config_params.topic",
         and blocks the execution (expected to be run as a background process).
 
-        @param queue -- a queue object to get the parameters from parent process
+        @param queue -- Queue obj (to get the parameters from parent process)
+        @param stop_queue -- Queue obj (to signal stopping the rosnode)
+
         '''
         topic_params_dict = queue.get()
         topic_params = RosTopicParams()
         topic_params.from_dict(topic_params_dict)
-        self.new_handle_name = ConfigUtils.get_full_variable_name(
-                "ros_logger", topic_params.name)
+        self.new_handle_name = ConfigUtils.get_full_variable_name("ros_logger", 
+                                                                 topic_params.name)
         rospy.init_node(self.new_handle_name)
-        print('[rostopic_reader] {0} initialised'.format(self.new_handle_name))
         self.listener = ROSTopicListener(topic_params.name,
                                         topic_params.msg_pkg,
                                         topic_params.msg_type,
                                         topic_params.max_frequency,
                                         self.data_logger)
         self.listener.start()
+        print('[rostopic_reader] {0} initialised'.format(self.new_handle_name))
         try:
-            rospy.spin()
-        except TypeError:
-            self.listener.shutdown()
-            print('[rostopic_reader] {0} terminated'.format(self.new_handle_name))
+            while stop_queue.empty():
+                rospy.sleep(0.2)
+        except Exception as e:
+            # print("[rostopic_reader] Encountered error", str(e))
+            pass
+        self.listener.shutdown()
+        rospy.signal_shutdown("Blackbox logging was stopped.")
+        print('[rostopic_reader] {0} terminated'.format(self.new_handle_name))
 
     def __terminate_node(self):
+        print('[rostopic_reader] Terminating all child processes')
         if self.listeners_initialised:
-            for topic_params in self.config_params.topic:
-                rosnode.kill_nodes(self.node_handle_name + topic_params.name[1:])
+            self.stop_queue.put(True) # make stop_queue non empty
             for process in self.nodes :
-                print(process.pid)
-                process.terminate()
+                process.join()
+            while not self.stop_queue.empty(): # make stop_queue empty again
+                self.stop_queue.get()
 
     def __is_master_running(self):
         '''Returns True if a ROS master is running; returns False otherwise.
