@@ -3,16 +3,14 @@
 
 import time
 import os
-import yaml
-import signal
 import subprocess
 import unittest
+import yaml
 import pymongo as pm
 
 from ropod.pyre_communicator.base_class import RopodPyre
 from ropod.utils.models import MessageFactory
 from ropod.utils.uuid import generate_uuid
-from black_box.config.config_file_reader import ConfigFileReader
 from black_box.query_interface.query_interface import BlackBoxQueryInterface
 
 class QueryTest(RopodPyre):
@@ -31,8 +29,8 @@ class QueryTest(RopodPyre):
         query_msg['payload'] = {}
         query_msg['payload']['senderId'] = generate_uuid()
         self.sender_id = query_msg['payload']['senderId']
-        if payload_dict is not None :
-            for key in payload_dict.keys() :
+        if payload_dict is not None:
+            for key in payload_dict.keys():
                 query_msg['payload'][key] = payload_dict[key]
 
         # print(json.dumps(query_msg, indent=2, default=str))
@@ -65,7 +63,7 @@ class TestBBQueryInterface(unittest.TestCase):
         host, port = cls._get_db_host_and_port()
         cls.client = pm.MongoClient(host=host, port=port)
         success = cls._restore_test_db()
-        assert(success)
+        assert success
 
         # read config params
         cls.config_file_path = os.path.join(main_dir, 'config/test_sources.yaml')
@@ -102,8 +100,10 @@ class TestBBQueryInterface(unittest.TestCase):
         self.assertIn('payload', message)
         self.assertIn('variableList', message['payload'])
         self.assertIn('ros', message['payload']['variableList'])
-        cmd_vel_variables = ['ros_ropod_cmd_vel/angular/x', 'ros_ropod_cmd_vel/angular/y', 'ros_ropod_cmd_vel/angular/z',
-                'ros_ropod_cmd_vel/linear/x', 'ros_ropod_cmd_vel/linear/y', 'ros_ropod_cmd_vel/linear/z']
+        cmd_vel_variables = [
+            'ros_ropod_cmd_vel/angular/x', 'ros_ropod_cmd_vel/angular/y',
+            'ros_ropod_cmd_vel/angular/z', 'ros_ropod_cmd_vel/linear/x',
+            'ros_ropod_cmd_vel/linear/y', 'ros_ropod_cmd_vel/linear/z']
         for variable in cmd_vel_variables:
             self.assertIn(variable, message['payload']['variableList']['ros'])
 
