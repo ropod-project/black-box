@@ -10,8 +10,8 @@ import psutil
 import rospy
 from termcolor import colored
 
-from rostopic_publisher import RosTopicPublisher
-from zyre_publisher import ZyrePublisher
+from black_box.automatic_tests.rostopic_publisher import RosTopicPublisher
+from black_box.automatic_tests.zyre_publisher import ZyrePublisher
 
 from black_box.config.config_file_reader import ConfigFileReader
 from black_box.config.config_utils import ConfigUtils
@@ -80,14 +80,15 @@ def is_bb_running():
 
     """
     processes = list(psutil.process_iter())
-    bb_processes = [process for process in processes if 'logger_main.py' in process.cmdline()]
+    bb_processes = [process for process in processes for argument in process.cmdline() if 'logger_main.py' in argument]
     return len(bb_processes) > 0
 
-def check_logs(config_params, test_duration):
+def check_logs(config_params, test_duration, print_output=False):
     """Check the logs in mongodb and print the status.
 
     :config_params: black_box.config.ConfigParams
     :test_duration: float
+    :print_output: bool
     :returns: None
 
     """
@@ -130,13 +131,41 @@ def check_logs(config_params, test_duration):
                 'collection': topic_name,
                 'expected_size': expected_size,
                 'collection_size': collection_size})
-    if not fail:
+    if not fail and print_output:
         print(colored("All topics have their respective collection in mongoDB", "green"))
     for comparison in size_status:
         color = "green" if comparison['expected_size'] == comparison['collection_size'] else "red"
         string = comparison['collection'] + ': ' + str(comparison['collection_size']) \
                 + '/' + str(comparison['expected_size'])
-        print(colored(string, color))
+        if print_output:
+            print(colored(string, color))
+    return size_status
+
+def main(config_file, test_duration, print_output=False):
+    """ main function which uses AutomaticTester class and tests if bb works or not
+
+    :config_file: string (file path of the config file to be used)
+    :test_duration: float/int (time for which the publishers should be on)
+    """
+    # only proceed if black box is running
+    if not is_bb_running():
+        print('Blackbox is not running. Please make sure it is running before',
+              'executing this test script.')
+        sys.exit(1)
+
+    config_params = ConfigFileReader.load_config(config_file)
+    DBUtils.clear_db(config_params.default.db_name)
+
+    tester = AutomaticTester(config_params, test_duration)
+    print("initialised all publisher")
+
+    tester.start()
+    print("publishers running")
+
+    tester.stop()
+    print("publishers stopped")
+
+    return check_logs(config_params, test_duration, print_output=print_output)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -146,22 +175,5 @@ if __name__ == "__main__":
 
     TEST_DURATION = 20 #seconds
 
-    # only proceed if black box is running
-    if not is_bb_running():
-        print('Blackbox is not running. Please make sure it is running before',
-              'executing this test script.')
-        sys.exit(1)
-
-    CONFIG_PARAMS = ConfigFileReader.load_config(BB_CONFIG_FILE)
-    DBUtils.clear_db(CONFIG_PARAMS.default.db_name)
-
-    TESTER = AutomaticTester(CONFIG_PARAMS, TEST_DURATION)
-    print("initialised all publisher")
-
-    TESTER.start()
-    print("publishers running")
-
-    TESTER.stop()
-    print("publishers stopped")
-
-    check_logs(CONFIG_PARAMS, TEST_DURATION)
+    OUTPUT = main(BB_CONFIG_FILE, TEST_DURATION, print_output=True)
+    print(OUTPUT)

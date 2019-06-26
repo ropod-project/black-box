@@ -41,9 +41,7 @@ class ZyrePublisher(RopodPyre):
             self._send_request(self.msg_type)
             time.sleep(self.sleep_time)
         self.publishing = False
-        print('before shutdown')
         self.shutdown()
-        print('after shutdown')
 
     def _send_request(self, msg_type, payload_dict=None):
         request_msg = dict()
