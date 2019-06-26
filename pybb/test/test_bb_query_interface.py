@@ -22,6 +22,7 @@ class QueryTest(RopodPyre):
         super(QueryTest, self).__init__('bb_query_test', ['ROPOD'], [],
                                         verbose=False, acknowledge=False)
         self.response = None
+        self.sender_id = None
         self.start()
 
     def send_request(self, msg_type, payload_dict=None):
@@ -29,6 +30,7 @@ class QueryTest(RopodPyre):
 
         query_msg['payload'] = {}
         query_msg['payload']['senderId'] = generate_uuid()
+        self.sender_id = query_msg['payload']['senderId']
         if payload_dict is not None :
             for key in payload_dict.keys() :
                 query_msg['payload'][key] = payload_dict[key]
@@ -41,7 +43,11 @@ class QueryTest(RopodPyre):
         if message is None:
             return
 
-        self.response = message
+        if self.sender_id:
+            if 'payload' in message and 'receiverId' in message['payload']:
+                if self.sender_id == message['payload']['receiverId']:
+                    self.sender_id = None
+                    self.response = message
 
 class TestBBQueryInterface(unittest.TestCase):
 
@@ -101,11 +107,51 @@ class TestBBQueryInterface(unittest.TestCase):
         for variable in cmd_vel_variables:
             self.assertIn(variable, message['payload']['variableList']['ros'])
 
-    # def test_data_query(self):
-    #     pass
+    def test_data_query(self):
+        msg_type = "DATA-QUERY"
+        payload = {
+            'blackBoxId':self.bb_id,
+            'variables':['ros_ropod_cmd_vel/linear/x'],
+            'startTime':1544441409.0861,
+            'endTime':1544441409.88607}
+        message = self.send_request_get_response(msg_type, payload)
 
-    # def test_latest_data_query(self):
-    #     pass
+        self.assertNotEqual(message, None)
+        self.assertIn('header', message)
+        self.assertIn('type', message['header'])
+        self.assertEqual(message['header']['type'], msg_type)
+        self.assertIn('payload', message)
+        self.assertIn('dataList', message['payload'])
+        self.assertIn(payload['variables'][0], message['payload']['dataList'])
+        self.assertEqual(len(message['payload']['dataList'][payload['variables'][0]]), 6)
+
+    def test_latest_data_query(self):
+        try:
+            msg_type = "LATEST-DATA-QUERY"
+            payload = {
+                'blackBoxId':self.bb_id,
+                'variables':['ros_ropod_cmd_vel/linear/x']}
+            message = self.send_request_get_response(msg_type, payload)
+            db_obj = self.client[self.test_db_name]
+            collection = db_obj['ros_ropod_cmd_vel']
+            doc = collection.find_one(sort=[('timestamp', pm.DESCENDING)])
+            latest_time_stamp = doc['timestamp']
+
+            self.assertNotEqual(message, None)
+            self.assertIn('header', message)
+            self.assertIn('type', message['header'])
+            self.assertEqual(message['header']['type'], msg_type)
+            self.assertIn('payload', message)
+            self.assertIn('dataList', message['payload'])
+            self.assertIn(payload['variables'][0], message['payload']['dataList'])
+            data = message['payload']['dataList'][payload['variables'][0]]
+            self.assertIsInstance(data, str)
+            received_timestamp = float(data[1:-1].split(',')[0])
+            self.assertEqual(received_timestamp, latest_time_stamp)
+        except Exception as e:
+            print("Got following exception")
+            print(str(e))
+
 
     def send_request_get_response(self, msg_type, payload_dict = None):
         self.test_pyre_node.send_request(msg_type, payload_dict)
