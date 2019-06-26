@@ -59,7 +59,7 @@ class DBInterface(object):
 
         '''
         docs = DBUtils.get_doc_cursor(
-                self.db_name, collection_name, start_time, end_time, self.db_port)
+                self.db_name, collection_name, start_time, end_time)
 
         var_data = {}
         var_full_names = {}
