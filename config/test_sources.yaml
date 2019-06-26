@@ -4,9 +4,9 @@
     max_database_size: 102400
     # whether or not to create a new DB after max size is reached
     split_database: false
-    db_name: 'log_test'
+    db_name: 'bb_test_data'
 - zyre:
-    name: black_box_001
+    name: black_box_101
     groups:
         - ROPOD
     message_types:
