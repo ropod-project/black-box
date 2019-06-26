@@ -9,7 +9,7 @@ class ConfigFileReader(object):
         config_data = dict()
         try:
             with open(config_file_name, 'r') as config_file:
-                config_data = yaml.load(config_file)
+                config_data = yaml.safe_load(config_file)
         except Exception as exc:
             print('[config_file_reader] An error occured while reading {0}'.format(config_file_name))
             print(exc)
