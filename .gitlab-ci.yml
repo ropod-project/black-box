@@ -1,0 +1,14 @@
+image: "mongo"
+before_script:
+    - apt-get update
+    - apt-get install -y git-all
+    - apt-get install -y python3-pip
+    - pip3 install --upgrade pip
+    - cat pybb/requirements.txt | xargs -n 1 -L 1 pip3 install
+variables:
+    DB_HOST: mongo
+services:
+    - mongo
+test:
+    script:
+        - python3 -m unittest discover -s 'pybb/test' -p 'test_*.py'
