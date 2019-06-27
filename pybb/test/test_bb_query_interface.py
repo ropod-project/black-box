@@ -217,10 +217,3 @@ def get_config_params(config_file):
 
 if __name__ == '__main__':
     unittest.main()
-    # test_dir = os.path.abspath(os.path.dirname(__file__))
-    # pybb_dir = os.path.dirname(test_dir)
-    # main_dir = os.path.dirname(pybb_dir)
-
-    # config_file_path = os.path.join(main_dir, 'config/test_sources.yaml')
-    # config_params = get_config_params(config_file_path)
-    # print(config_params)
