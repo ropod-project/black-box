@@ -5,6 +5,7 @@ before_script:
     - apt-get install -y python3-pip
     - pip3 install --upgrade pip
     - cat pybb/requirements.txt | xargs -n 1 -L 1 pip3 install
+    - python3 pybb/setup.py install
 variables:
     DB_HOST: mongo
 services:
