@@ -2,6 +2,7 @@ pymongo
 PyYAML
 rospkg
 catkin_pkg
+psutil
 git+https://github.com/ropod-project/rospy_message_converter.git#egg=rospy_message_converter
 git+https://github.com/ropod-project/ropod_common.git#egg=ropod\&subdirectory=pyropod
 git+https://github.com/ropod-project/black-box-tools.git#egg=black_box_tools
