@@ -1,4 +1,4 @@
-image: "mongo"
+image: "git.ropod.org:4567/ropod/ropod_common:latest"
 before_script:
     - apt-get update
     - apt-get install -y git-all
