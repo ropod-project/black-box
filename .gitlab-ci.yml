@@ -1,15 +1,12 @@
-image: "git.ropod.org:4567/ropod/ropod_common:latest"
+image: "git.ropod.org:4567/ropod/execution-monitoring/black-box:mongo"
 before_script:
-    - apt-get update
-    - apt-get install -y git-all
-    - apt-get install -y python3-pip
-    - pip3 install --upgrade pip
     - cat pybb/requirements.txt | xargs -n 1 -L 1 pip3 install
-    - python3 pybb/setup.py install
+    - cd pybb && python3 setup.py install && cd ..
+    - source /opt/ros/kinetic/setup.bash
+    - mkdir -p /data/db
+    - service mongodb start
 variables:
-    DB_HOST: mongo
-services:
-    - mongo
+    DB_HOST: localhost
 test:
     script:
         - python3 -m unittest discover -s 'pybb/test' -p 'test_*.py'
