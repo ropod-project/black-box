@@ -11,8 +11,10 @@ class BlackBoxQueryInterface(RopodPyre):
 
     '''
     def __init__(self, data_sources, black_box_id, groups, db_name='logs', db_port=27017):
-        super(BlackBoxQueryInterface, self).__init__(black_box_id + '_query_interface',
-                                                     groups, list())
+        super(BlackBoxQueryInterface, self).__init__({
+                'node_name': black_box_id + '_query_interface',
+                'groups': groups,
+                'message_types': list()})
         self.data_sources = data_sources
         self.black_box_id = black_box_id
         self.db_interface = DBInterface(db_name, db_port)

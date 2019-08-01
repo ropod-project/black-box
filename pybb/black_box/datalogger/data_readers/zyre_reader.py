@@ -15,9 +15,9 @@ class ZyreReader(RopodPyre):
 
     '''
     def __init__(self, config_params, data_logger, interface_name='zyre'):
-        super(ZyreReader, self).__init__(node_name=config_params.node_name,
-                                         groups=config_params.groups,
-                                         message_types=config_params.message_types)
+        super(ZyreReader, self).__init__({'node_name': config_params.node_name,
+                                          'groups': config_params.groups,
+                                          'message_types': config_params.message_types})
         self.config_params = config_params
         self.data_logger = data_logger
         self.logging = False

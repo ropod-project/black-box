@@ -21,8 +21,10 @@ class ZyrePublisher(RopodPyre):
     """
 
     def __init__(self, msg_type, groups, **kwargs):
-        super(ZyrePublisher, self).__init__(
-            'zyre_publisher_automatic_test_'+msg_type, groups, list(),
+        super(ZyrePublisher, self).__init__({
+                'node_name': 'zyre_publisher_automatic_test_'+msg_type,
+                'groups': groups,
+                'message_types': list()},
             verbose=False, acknowledge=False)
         self.msg_type = msg_type
         self.num_of_msgs = kwargs.get('num_of_msgs', 10)

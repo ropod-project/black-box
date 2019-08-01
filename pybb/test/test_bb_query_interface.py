@@ -17,8 +17,10 @@ class QueryTest(RopodPyre):
     """ Pyre node for communicating with black box query interface"""
 
     def __init__(self):
-        super(QueryTest, self).__init__('bb_query_test', ['ROPOD'], [],
-                                        verbose=False, acknowledge=False)
+        super(QueryTest, self).__init__({
+            'node_name': 'bb_query_test',
+            'groups': ['ROPOD'], 'message_types': []},
+            verbose=False, acknowledge=False)
         self.response = None
         self.sender_id = None
         self.start()
