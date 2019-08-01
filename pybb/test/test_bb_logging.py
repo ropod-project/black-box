@@ -16,6 +16,7 @@ class TestBBLogging(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        print("Absolute beggining")
         cls.threshold = 0.9 # percent of message that are required to be logged
 
         test_dir = os.path.abspath(os.path.dirname(__file__))
