@@ -13,7 +13,7 @@ class ConfigParams(object):
 def get_config_params(config_file):
     config_data = dict()
     with open(config_file, 'r') as bb_config:
-        config_data = yaml.load(bb_config)
+        config_data = yaml.safe_load(bb_config)
 
     config_params = ConfigParams()
     for data_item in config_data:

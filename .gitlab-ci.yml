@@ -1,0 +1,12 @@
+image: "git.ropod.org:4567/ropod/execution-monitoring/black-box:mongo"
+before_script:
+    - cat pybb/requirements.txt | xargs -n 1 -L 1 pip3 install
+    - cd pybb && python3 setup.py install && cd ..
+    - source /opt/ros/kinetic/setup.bash
+    - mkdir -p /data/db
+    - service mongodb start
+variables:
+    DB_HOST: localhost
+test:
+    script:
+        - python3 -m unittest discover -s 'pybb/test' -p 'test_*.py'

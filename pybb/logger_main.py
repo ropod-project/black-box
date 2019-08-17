@@ -29,7 +29,7 @@ if __name__ == '__main__':
                            split_db=config_params.default.split_db,
                            max_db_size=config_params.default.max_db_size)
     logger.write_metadata(config_params)
-    
+
     readers = {}
     for reader_name in config_params.__dict__.keys():
         if reader_name != 'default': # TODO:need better way to ignore default
