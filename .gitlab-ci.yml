@@ -9,5 +9,4 @@ variables:
     DB_HOST: localhost
 test:
     script:
-        - python3 pybb/test/test_bb_logging.py
-        # - python3 -m unittest discover -s 'pybb/test' -p 'test_*.py'
+        - python3 -m unittest discover -s 'pybb/test' -p 'test_*.py'
