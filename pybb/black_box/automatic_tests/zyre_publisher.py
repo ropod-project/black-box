@@ -21,8 +21,10 @@ class ZyrePublisher(RopodPyre):
     """
 
     def __init__(self, msg_type, groups, **kwargs):
-        super(ZyrePublisher, self).__init__(
-            'zyre_publisher_automatic_test_'+msg_type, groups, list(),
+        super(ZyrePublisher, self).__init__({
+                'node_name': 'zyre_publisher_automatic_test_'+msg_type,
+                'groups': groups,
+                'message_types': list()},
             verbose=False, acknowledge=False)
         self.msg_type = msg_type
         self.num_of_msgs = kwargs.get('num_of_msgs', 10)
@@ -41,9 +43,7 @@ class ZyrePublisher(RopodPyre):
             self._send_request(self.msg_type)
             time.sleep(self.sleep_time)
         self.publishing = False
-        print('before shutdown')
         self.shutdown()
-        print('after shutdown')
 
     def _send_request(self, msg_type, payload_dict=None):
         request_msg = dict()

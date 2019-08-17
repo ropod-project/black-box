@@ -1,6 +1,7 @@
 import pymongo as pm
 from black_box.datalogger.loggers.logger_base import LoggerBase
 from black_box.config.config_utils import ConfigUtils
+from black_box_tools.db_utils import DBUtils
 
 class MongoDBLogger(LoggerBase):
     def __init__(self, db_name, db_port, split_db, max_db_size):
@@ -17,7 +18,11 @@ class MongoDBLogger(LoggerBase):
 
         '''
         if config_params:
-            client = pm.MongoClient(port=self.db_port)
+            (host, port) = DBUtils.get_db_host_and_port()
+            if port != self.db_port:
+                port = self.db_port
+
+            client = pm.MongoClient(host=host, port=port)
             db = client[self.db_name]
             collection_names = db.list_collection_names()
             if 'black_box_metadata' in collection_names:
@@ -49,8 +54,8 @@ class MongoDBLogger(LoggerBase):
                             metadata['ros']['direct_msg_mapping'] = topic_params.metadata.direct_msg_mapping
                             collection.insert_one(metadata)
         else:
-            print('[write_metadata] config_params needs to be of type ' + \
-                  'black_box.config.config_params.ConfigParams')
+            raise AssertionError('[write_metadata] config_params needs to be of type ' + \
+                                 'black_box.config.config_params.ConfigParams')
 
     def log_data(self, variable, timestamp, data):
         '''Logs the data dictionary for the given variable;
@@ -61,7 +66,11 @@ class MongoDBLogger(LoggerBase):
         @param data -- a dictionary to be logged
 
         '''
-        client = pm.MongoClient(port=self.db_port)
+        (host, port) = DBUtils.get_db_host_and_port()
+        if port != self.db_port:
+            port = self.db_port
+
+        client = pm.MongoClient(host=host, port=port)
         db = client[self.db_name]
         collection = db[variable]
         data['timestamp'] = timestamp

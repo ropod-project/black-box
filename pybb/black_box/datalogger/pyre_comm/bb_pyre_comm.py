@@ -6,7 +6,7 @@ from ropod.pyre_communicator.base_class import RopodPyre
 
 class BlackBoxPyreCommunicator(RopodPyre):
 
-    """Receive commands from other nodes 
+    """Receive commands from other nodes
     example: starting and stoping of logging action.
 
     :groups: list of string (pyre groups)
@@ -15,14 +15,16 @@ class BlackBoxPyreCommunicator(RopodPyre):
     """
 
     def __init__(self, groups, black_box_id):
-        super(BlackBoxPyreCommunicator, self).__init__(
-                'bb_pyre_comm'+black_box_id, groups, list(), verbose=True)
+        super(BlackBoxPyreCommunicator, self).__init__({
+                'node_name': 'bb_pyre_comm'+black_box_id, 
+                'groups': groups,
+                'message_types': list()})
         self.logging = True
         self.black_box_id = black_box_id
         self.start()
 
     def receive_msg_cb(self, msg):
-        '''Processes the incoming messages 
+        '''Processes the incoming messages
 
         :msg: string (a message in JSON format)
 

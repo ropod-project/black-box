@@ -22,7 +22,11 @@ class DBInterface(object):
                               start with the data source name
 
         '''
-        client = pm.MongoClient(port=self.db_port)
+        (host, port) = DBUtils.get_db_host_and_port()
+        if port != self.db_port:
+            port = self.db_port
+
+        client = pm.MongoClient(host=host, port=port)
         database = client[self.db_name]
         collection_names = database.list_collection_names()
 
@@ -58,8 +62,7 @@ class DBInterface(object):
                            no upper bound for the timestamp of the retrieved data)
 
         '''
-        docs = DBUtils.get_doc_cursor(
-                self.db_name, collection_name, start_time, end_time, self.db_port)
+        docs = DBUtils.get_doc_cursor(self.db_name, collection_name, start_time, end_time)
 
         var_data = {}
         var_full_names = {}
@@ -89,7 +92,11 @@ class DBInterface(object):
         @param variable_names -- list of variable names that should be retrieved from the collection
 
         '''
-        client = pm.MongoClient(port=self.db_port)
+        (host, port) = DBUtils.get_db_host_and_port()
+        if port != self.db_port:
+            port = self.db_port
+
+        client = pm.MongoClient(host=host, port=port)
         database = client[self.db_name]
         collection = database[collection_name]
         doc = collection.find_one(sort=[('timestamp', pm.DESCENDING)])
