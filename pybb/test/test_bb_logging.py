@@ -16,7 +16,6 @@ class TestBBLogging(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        print("Absolute beggining")
         cls.threshold = 0.9 # percent of message that are required to be logged
 
         test_dir = os.path.abspath(os.path.dirname(__file__))
@@ -28,16 +27,20 @@ class TestBBLogging(unittest.TestCase):
         bb_output_file_path = '/tmp/bb_output_file_' + str(time.time()).replace('.', '_')
         cls.bb_output_file = open(bb_output_file_path, 'w')
 
+        print("Starting roscore as a process")
+        commands = ['roscore']
+        cls.roscore_process = subprocess.Popen(commands, stdout=cls.bb_output_file)
+
         print("Starting black box as a process")
         commands = [str(bb_program_file), str(cls.config_file_path)]
-        cls.process = subprocess.Popen(commands, stdout=cls.bb_output_file)
-        print("Waiting for black box process to initialise completely...")
+        cls.bb_process = subprocess.Popen(commands, stdout=cls.bb_output_file)
+        print("Waiting for 10s for black box process to initialise completely...")
         time.sleep(10)
 
     @classmethod
     def tearDownClass(cls):
-        cls.process.send_signal(signal.SIGINT)
-        cls.process.wait()
+        cls.roscore_process.send_signal(signal.SIGINT)
+        cls.bb_process.send_signal(signal.SIGINT)
         cls.bb_output_file.close()
 
     def test_bb_with_test_config(self):
