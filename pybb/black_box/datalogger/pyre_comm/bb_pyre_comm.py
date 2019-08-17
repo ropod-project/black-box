@@ -6,7 +6,7 @@ from ropod.pyre_communicator.base_class import RopodPyre
 
 class BlackBoxPyreCommunicator(RopodPyre):
 
-    """Receive commands from other nodes 
+    """Receive commands from other nodes
     example: starting and stoping of logging action.
 
     :groups: list of string (pyre groups)
@@ -24,7 +24,7 @@ class BlackBoxPyreCommunicator(RopodPyre):
         self.start()
 
     def receive_msg_cb(self, msg):
-        '''Processes the incoming messages 
+        '''Processes the incoming messages
 
         :msg: string (a message in JSON format)
 
