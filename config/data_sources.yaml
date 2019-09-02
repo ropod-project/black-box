@@ -9,7 +9,7 @@
     listeners:
         - listener:
             name: rosparam
-            event_type: 'CHANGE'
+            event_type: 'ON_CHANGE'
 - zyre:
     name: black_box_001
     groups:
