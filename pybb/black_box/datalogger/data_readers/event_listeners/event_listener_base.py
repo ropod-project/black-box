@@ -27,6 +27,7 @@ class EventListenerBase(object):
     def start(self):
         self.logging = True
         self.sub_thread = threading.Thread(target=self.run)
+        print('['+self.name+'_event_listener] Starting')
         self.sub_thread.start()
 
     def stop(self):
