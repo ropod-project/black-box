@@ -1,0 +1,39 @@
+- default_parameters:
+    max_frequency: 10
+    # maximum database size in MB
+    max_database_size: 102400
+    # whether or not to create a new DB after max size is reached
+    split_database: false
+    db_name: 'bb_test_data'
+- event:
+    listeners:
+        # - listener:
+        #     name: test
+        #     event_type: 'ON_CHANGE'
+        #     max_frequency: 1
+        - listener:
+            name: system_info
+            event_type: 'ON_STARTUP'
+            max_frequency: 1
+        # - listener:
+        #     name: rosparam
+        #     event_type: 'ON_CHANGE'
+        #     max_frequency: 1
+- zyre:
+    name: black_box_001
+    groups:
+        - ROPOD
+    message_types: []
+- ros:
+    ros_master_uri: localhost
+    topics:
+        - topic:
+            name: /ropod/laser/scan
+            type: sensor_msgs/LaserScan
+            variable_names: [frame_id, angle_min, angle_max, angle_increment, time_increment, scan_time, range_min, range_max, ranges]
+            max_frequency: 10
+            metadata:
+                ros:
+                    topic_name: /ropod/laser/scan
+                    msg_type: sensor_msgs/LaserScan
+                    direct_msg_mapping: true
