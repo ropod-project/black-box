@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import time
-import rospy
+import subprocess
 from black_box.datalogger.data_readers.event_listeners.event_listener_base import EventListenerBase
 
 class RosparamListener(EventListenerBase):
@@ -17,8 +17,6 @@ class RosparamListener(EventListenerBase):
         self._last_logged_ros_param = None
 
     def _get_data_on_change(self):
-        if self._last_logged_ros_param is None:
-            time.sleep(2) # hack (this makes rostopic_reader start up properly)
         current_ros_param = self.get_current_ros_params_as_dict()
         if self._last_logged_ros_param is None or self._last_logged_ros_param != current_ros_param:
             self._last_logged_ros_param = current_ros_param
@@ -30,8 +28,15 @@ class RosparamListener(EventListenerBase):
         :returns: dict
 
         """
+        ans = subprocess.check_output(['rosparam', 'list'])
+        keys = ans.decode('utf-8').split('\n')[:-1]
+
         ros_params = dict()
-        keys = rospy.get_param_names()
         for key in keys:
-            ros_params[key] = rospy.get_param(key)
+            something = subprocess.check_output(['rosparam', 'get', key])
+            value = something.decode('utf-8').strip()
+            if value[0] == value[-1] == '\'':
+                value = value[1:-1].strip()
+            ros_params[key] = value
+
         return ros_params
