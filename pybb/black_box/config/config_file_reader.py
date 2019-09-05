@@ -151,11 +151,7 @@ class ConfigFileReader(object):
                             raise Exception('event: Event listener name not specified')
 
                         if 'event_type' in listener_data:
-                            if listener_data['event_type'] in ['CHANGE']:
-                                listener_params.event_type = listener_data['event_type']
-                            else:
-                                raise Exception('event: event_type not recongnised for {0}'.format(listener_data['name']))
-
+                            listener_params.event_type = listener_data['event_type']
                         else:
                             raise Exception('event: event_type not specified for {0}'.format(listener_data['name']))
 

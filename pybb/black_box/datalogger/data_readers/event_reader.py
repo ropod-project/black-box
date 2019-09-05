@@ -1,4 +1,6 @@
 import importlib
+import rospy
+from multiprocessing import Process, Queue
 from black_box.config.config_params import EventListenerParams
 from black_box.config.config_utils import ConfigUtils
 from black_box.datalogger.data_readers.event_listeners.event_listener_base import EventListenerBase
@@ -18,34 +20,65 @@ class EventReader(object):
         self.config_params = config_params
         self.max_frequency = max_frequency
         self.data_logger = data_logger
-        self.listeners = []
         self.logging = False
         self.listener_classes = self.get_listener_classes()
+        self.process = None
+        self.stop_queue = Queue()
 
     def start_logging(self):
         '''Initialise and start the listeners
         '''
         self.logging = True
-        for Listener, listener_param in zip(self.listener_classes, self.config_params.listeners):
-            self.listeners.append(
-                    Listener(
-                        listener_param.name, 
-                        listener_param.event_type, 
-                        listener_param.max_frequency, 
-                        self.data_logger)
-                    )
-        for listener in self.listeners:
-            listener.start()
-        print('[EventReader] All Listener started')
+        self.process = Process(
+                target=self.__create_event_listeners, 
+                args=(self.stop_queue,),
+                name='event_listener_process')
+        self.process.start()
 
     def stop_logging(self):
         '''Stops all listeners 
         '''
         self.logging = False
         print('[EventReader] Stopping all listeners')
-        for listener in self.listeners:
+        if self.process is not None:
+            self.stop_queue.put(True) # make stop_queue non empty
+            self.process.join(timeout=3.0)
+            if self.process.is_alive():
+                self.process.terminate()
+        print('[EventReader] Stopped all listeners')
+        self.process = None
+
+    def __create_event_listeners(self, stop_queue):
+        """Create ros node and event listeners and wait till parent process 
+        signals for shutdown. Once that signal is received (`stop_queue` is non
+        empty), shutdown all listeners and shutdown ros node.
+
+        :stop_queue: multiprocessing.Queue
+        :returns: None
+
+        """
+        rospy.init_node('event_listener')
+        listeners = []
+        for Listener, listener_param in zip(self.listener_classes, self.config_params.listeners):
+            listeners.append(Listener(listener_param.name, 
+                                      listener_param.event_type, 
+                                      listener_param.max_frequency, 
+                                      self.data_logger))
+        for listener in listeners:
+            listener.start()
+        print('[EventReader] All Listener started')
+        try:
+            while stop_queue.empty():
+                rospy.sleep(0.2)
+        except Exception as e:
+            print("[EventReader] Encountered error", str(e))
+            # pass
+        for listener in listeners:
             listener.stop()
-        self.listeners = list()
+        while not stop_queue.empty(): # make stop_queue empty again
+            stop_queue.get()
+        rospy.signal_shutdown("event listener logging was stopped.")
+        print('[EventReader] process terminated')
 
     def get_listener_classes(self):
         """Import event listeners based on the config file.
