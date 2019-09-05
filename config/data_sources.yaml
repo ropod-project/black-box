@@ -10,6 +10,10 @@
         - listener:
             name: rosparam
             event_type: 'ON_CHANGE'
+        - listener:
+            name: system_info
+            event_type: 'ON_STARTUP'
+            max_frequency: 1
 - zyre:
     name: black_box_001
     groups:
