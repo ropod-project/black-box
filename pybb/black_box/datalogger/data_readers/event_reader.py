@@ -60,13 +60,10 @@ class EventReader(object):
         rospy.init_node('event_listener')
         listeners = []
         for Listener, listener_param in zip(self.listener_classes, self.config_params.listeners):
-            listeners.append(
-                    Listener(
-                        listener_param.name, 
-                        listener_param.event_type, 
-                        listener_param.max_frequency, 
-                        self.data_logger)
-                    )
+            listeners.append(Listener(listener_param.name, 
+                                      listener_param.event_type, 
+                                      listener_param.max_frequency, 
+                                      self.data_logger))
         for listener in listeners:
             listener.start()
         print('[EventReader] All Listener started')
