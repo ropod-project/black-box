@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import time
-import subprocess
+import rospy
 from black_box.datalogger.data_readers.event_listeners.event_listener_base import EventListenerBase
 
 class RosparamListener(EventListenerBase):
@@ -28,15 +28,8 @@ class RosparamListener(EventListenerBase):
         :returns: dict
 
         """
-        ans = subprocess.check_output(['rosparam', 'list'])
-        keys = ans.decode('utf-8').split('\n')[:-1]
-
+        keys = rospy.get_param_names()
         ros_params = dict()
         for key in keys:
-            something = subprocess.check_output(['rosparam', 'get', key])
-            value = something.decode('utf-8').strip()
-            if value[0] == value[-1] == '\'':
-                value = value[1:-1].strip()
-            ros_params[key] = value
-
+            ros_params[key] = rospy.get_param(key)
         return ros_params

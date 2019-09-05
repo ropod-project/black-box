@@ -65,6 +65,9 @@ if __name__ == '__main__':
             if readers[reader_name]:
                 readers[reader_name].start_logging()
 
+                # we wait for a bit, giving time the reader to initialise
+                time.sleep(0.1)
+
         print('[{0}] Logger configured; ready to log data'.format(config_params.zyre.node_name))
         logging = True
         while True:

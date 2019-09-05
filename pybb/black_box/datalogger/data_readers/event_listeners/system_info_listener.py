@@ -13,16 +13,12 @@ class SystemInfoListener(EventListenerBase):
     def __init__(self, name, event_type, max_frequency, data_logger):
         super(SystemInfoListener, self).__init__(name, event_type, max_frequency, data_logger)
         self._logged = False
-        rospy.sleep(2)
-        print("before sub and pub")
         self.ropod_get_info_pub = rospy.Publisher('/ropod_system_info/get_ropod_info',
                                                   Empty,
                                                   queue_size=1)
-        print("after pub")
         self.ropod_info_sub = rospy.Subscriber('/ropod_system_info/ropod_info',
                                                String,
                                                self._get_ropod_info)
-        print("after sub")
 
     def _get_data_on_startup(self):
         if self._logged:

@@ -43,11 +43,8 @@ class EventReader(object):
         if self.process is not None:
             self.stop_queue.put(True) # make stop_queue non empty
             self.process.join(timeout=3.0)
-            print(self.process.is_alive())
             if self.process.is_alive():
                 self.process.terminate()
-            # while not self.stop_queue.empty(): # make stop_queue empty again
-            #     self.stop_queue.get()
         print('[EventReader] Stopped all listeners')
         self.process = None
 
@@ -61,7 +58,6 @@ class EventReader(object):
 
         """
         rospy.init_node('event_listener')
-        rospy.sleep(1)
         listeners = []
         for Listener, listener_param in zip(self.listener_classes, self.config_params.listeners):
             listeners.append(
@@ -85,7 +81,7 @@ class EventReader(object):
         while not stop_queue.empty(): # make stop_queue empty again
             stop_queue.get()
         rospy.signal_shutdown("event listener logging was stopped.")
-        print('[event_reader] process terminated')
+        print('[EventReader] process terminated')
 
     def get_listener_classes(self):
         """Import event listeners based on the config file.
