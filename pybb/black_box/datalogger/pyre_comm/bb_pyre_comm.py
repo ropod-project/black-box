@@ -16,7 +16,7 @@ class BlackBoxPyreCommunicator(RopodPyre):
 
     def __init__(self, groups, black_box_id):
         super(BlackBoxPyreCommunicator, self).__init__({
-                'node_name': 'bb_pyre_comm'+black_box_id, 
+                'node_name': 'bb_pyre_comm'+black_box_id,
                 'groups': groups,
                 'message_types': list()})
         self.logging = True
@@ -36,13 +36,12 @@ class BlackBoxPyreCommunicator(RopodPyre):
         if 'header' not in dict_msg or 'type' not in dict_msg['header']:
             return None
         message_type = dict_msg['header']['type']
-        if message_type == "BLACK-BOX_LOGGING_CMD":
+        if message_type == "BLACK-BOX-LOGGING-CMD":
             if dict_msg['header'].get('blackBoxId', "") == self.black_box_id:
-                print(dict_msg)
                 if 'payload' not in dict_msg:
                     return None
                 cmd = dict_msg['payload'].get('cmd', "")
                 if cmd == 'START':
                     self.logging = True
-                elif cmd == 'STOP':
+                elif cmd == 'STOP' or cmd == 'PAUSE':
                     self.logging = False
