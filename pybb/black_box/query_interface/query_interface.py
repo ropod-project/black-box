@@ -71,6 +71,7 @@ class BlackBoxQueryInterface(RopodPyre):
                 data.update(data_maps)
 
             response_msg = self.__get_response_msg_skeleton(message_type)
+            response_msg['payload']['requestMsgId'] = dict_msg['header']['msgId']
             response_msg['payload']['receiverId'] = dict_msg['payload']['senderId']
             response_msg['payload']['dataList'] = data
             return response_msg
@@ -86,6 +87,7 @@ class BlackBoxQueryInterface(RopodPyre):
                 data.update(data_maps)
 
             response_msg = self.__get_response_msg_skeleton(message_type)
+            response_msg['payload']['requestMsgId'] = dict_msg['header']['msgId']
             response_msg['payload']['receiverId'] = dict_msg['payload']['senderId']
             response_msg['payload']['dataList'] = data
             return response_msg
