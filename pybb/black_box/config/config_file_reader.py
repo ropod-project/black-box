@@ -1,5 +1,7 @@
-import black_box.config.config_params as config_params
+import os
 import yaml
+
+import black_box.config.config_params as config_params
 
 class ConfigFileReader(object):
     @staticmethod
@@ -38,6 +40,11 @@ class ConfigFileReader(object):
                     params.default.db_name = config_data['db_name']
                 else:
                     print('default_parameters: db_name not specified; using default \"logs\"')
+
+                if 'db_export_dir' in config_data:
+                    params.default.db_export_dir = os.path.expanduser(config_data['db_export_dir'])
+                else:
+                    print('default_parameters: db_export_dir not specified; using default \"/tmp\"')
             elif key == config_params.ConfigKeys.ROS:
                 params.ros = config_params.RosParams()
 
