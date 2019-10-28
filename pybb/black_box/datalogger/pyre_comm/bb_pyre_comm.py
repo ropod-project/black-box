@@ -48,15 +48,21 @@ class BlackBoxPyreCommunicator(RopodPyre):
                 elif cmd == 'STOP' or cmd == 'PAUSE':
                     self.logging = False
         elif message_type == 'ROBOT-EXPERIMENT-REQUEST':
+            if dict_msg['header'].get('blackBoxId', "") != self.black_box_id:
+                return None
             self.dump_and_reinit_bbdb('old_data')
             self.logging = True
         elif message_type == 'ROBOT-EXPERIMENT-FEEDBACK':
+            if dict_msg['header'].get('blackBoxId', "") != self.black_box_id:
+                return None
             if 'payload' not in dict_msg:
                 return None
             experiment_type = dict_msg['payload']['experimentType']
             self.dump_and_reinit_bbdb(experiment_type)
             self.logging = False
         elif message_type == 'ROBOT-EXPERIMENT-CANCEL':
+            if dict_msg['header'].get('blackBoxId', "") != self.black_box_id:
+                return None
             self.dump_and_reinit_bbdb('cancelled_experiment')
             self.logging = False
 
