@@ -56,6 +56,9 @@ class BlackBoxPyreCommunicator(RopodPyre):
             experiment_type = dict_msg['payload']['experimentType']
             self.dump_and_reinit_bbdb(experiment_type)
             self.logging = False
+        elif message_type == 'ROBOT-EXPERIMENT-CANCEL':
+            self.dump_and_reinit_bbdb('cancelled_experiment')
+            self.logging = False
 
     def dump_and_reinit_bbdb(self, data_descriptor):
         '''Dumps the current black box database in self.bb_config_params.default.db_export_dir,
