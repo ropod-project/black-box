@@ -34,30 +34,28 @@ if __name__ == '__main__':
     for reader_name in config_params.__dict__.keys():
         if reader_name != 'default': # TODO:need better way to ignore default
             readers[reader_name] = None
-    print(readers)
-
 
     if config_params.zyre:
         readers['zyre'] = ZyreReader(config_params.zyre, logger)
 
     if config_params.zmq:
         readers['zmq'] = JsonZmqReader(config_params.zmq.url,
-                                        config_params.zmq.port,
-                                        config_params.zmq.topics,
-                                        logger)
+                                       config_params.zmq.port,
+                                       config_params.zmq.topics,
+                                       logger)
 
     if config_params.ros:
         readers['ros'] = ROSTopicReader('rostopic_reader',
-                                         config_params.ros,
-                                         config_params.default.max_frequency,
-                                         logger)
+                                        config_params.ros,
+                                        config_params.default.max_frequency,
+                                        logger)
 
     if config_params.event:
         readers['event'] = EventReader(config_params.event,
-                                     config_params.default.max_frequency,
-                                     logger)
+                                       config_params.default.max_frequency,
+                                       logger)
 
-    bb_pyre_comm = BlackBoxPyreCommunicator(['ROPOD'], config_params.zyre.node_name)
+    bb_pyre_comm = BlackBoxPyreCommunicator(['ROPOD'], config_params, logger)
 
     try:
 

@@ -5,6 +5,7 @@
     # whether or not to create a new DB after max size is reached
     split_database: false
     db_name: 'logs'
+    db_export_dir: '~/black-box-logs'
 - event:
     listeners:
         - listener:
