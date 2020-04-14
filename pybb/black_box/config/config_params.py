@@ -30,17 +30,16 @@ class DefaultParams(object):
         self.max_db_size = 0
         self.split_db = False
         self.db_name = 'logs'
+        self.db_export_dir = '/tmp'
 
     def __str__(self):
         obj_str = ''
         obj_str += self.__class__.__name__ + '\n'
-        return obj_str
-    def __str__(self):
-        obj_str = ''
         obj_str += 'max_frequency: {0}\n'.format(self.max_frequency)
         obj_str += 'max_db_size: {0}\n'.format(self.max_db_size)
         obj_str += 'split_db: {0}\n'.format(self.split_db)
         obj_str += 'db_name: {0}\n'.format(self.db_name)
+        obj_str += 'db_export_dir: {0}\n'.format(self.db_export_dir)
         return obj_str
 
 # ==============================================
@@ -51,13 +50,15 @@ class RosTopicParams(object):
         self.msg_type = ''
         self.max_frequency = 0
         self.metadata = None
-    def to_dict(self) :
-        return {'name': self.name, 
-                'msg_pkg' : self.msg_pkg,
-                'msg_type' : self.msg_type,
-                'max_frequency' : self.max_frequency,
-                'metadata' : self.metadata }
-    def from_dict(self, param_dict) :
+
+    def to_dict(self):
+        return {'name': self.name,
+                'msg_pkg': self.msg_pkg,
+                'msg_type': self.msg_type,
+                'max_frequency': self.max_frequency,
+                'metadata': self.metadata}
+
+    def from_dict(self, param_dict):
         self.name = param_dict['name']
         self.msg_pkg = param_dict['msg_pkg']
         self.msg_type = param_dict['msg_type']
@@ -66,7 +67,7 @@ class RosTopicParams(object):
 
     def __str__(self):
         obj_str = ''
-        # obj_str += self.__class__.__name__ + '\n'
+        obj_str += self.__class__.__name__ + '\n'
         obj_str += 'name: {0}\n'.format(self.name)
         obj_str += 'msg_pkg: {0}\n'.format(self.msg_pkg)
         obj_str += 'msg_type: {0}\n'.format(self.msg_type)
@@ -85,7 +86,7 @@ class RosParams(object):
 
     def __str__(self):
         obj_str = ''
-        # obj_str += self.__class__.__name__ + '\n'
+        obj_str += self.__class__.__name__ + '\n'
         obj_str += 'ros_master_uri: {0}\n'.format(self.ros_master_uri)
         obj_str += 'topic_params:\n'
         for i, topic_params in enumerate(self.topic):
@@ -103,7 +104,7 @@ class RosMetadataParams(object):
 
     def __str__(self):
         obj_str = ''
-        # obj_str += self.__class__.__name__ + '\n'
+        obj_str += self.__class__.__name__ + '\n'
         obj_str += 'ros:\n'
         obj_str += '\ttopic_name: {0}\n'.format(self.topic_name)
         obj_str += '\tmsg_type: {0}\n'.format(self.msg_type)
@@ -119,7 +120,7 @@ class ZyreParams(object):
 
     def __str__(self):
         obj_str = ''
-        # obj_str += self.__class__.__name__ + '\n'
+        obj_str += self.__class__.__name__ + '\n'
         obj_str += 'node_name: {0}\n'.format(self.node_name)
         obj_str += 'groups: {0}\n'.format(self.groups)
         obj_str += 'message_types: {0}\n'.format(self.message_types)
@@ -132,7 +133,7 @@ class EventParams(object):
 
     def __str__(self):
         obj_str = ''
-        # obj_str += self.__class__.__name__ + '\n'
+        obj_str += self.__class__.__name__ + '\n'
         obj_str += 'listerners:\n'
         for i, listener in enumerate(self.listeners):
             obj_str += '\t{0}:\n'.format(i)
@@ -149,7 +150,7 @@ class EventListenerParams(object):
 
     def __str__(self):
         obj_str = ''
-        # obj_str += self.__class__.__name__ + '\n'
+        obj_str += self.__class__.__name__ + '\n'
         obj_str += 'name: {0}\n'.format(self.name)
         obj_str += 'event_type: {0}\n'.format(self.event_type)
         obj_str += 'max_frequency: {0}\n'.format(self.max_frequency)
@@ -223,4 +224,3 @@ class ConfigParams(object):
             obj_str += '\nevent:\n\t'
             obj_str += str(self.event).replace('\n', '\n\t')[:-1]
         return obj_str
-
