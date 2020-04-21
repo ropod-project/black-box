@@ -8,7 +8,7 @@ The black box has two major components:
 * `data logger`: A set of interfaces for reading data from different data sources and logging those data
 * `query_interface`: An interface for black box data retrieval
 
-Both the logger and the query interface are exposed in both Python and C++; the Python versions are however newer and generally more up-to-date than the C++ versions (the C++ version of the query interface is in particular outdated currently). Note: We develop and test under Python 3; there are no plans for backwards compatibility with Python 2.
+Both the logger and the query interface are exposed in both Python and C++; the Python versions are, however, newer and generally more up-to-date than the C++ versions (the C++ version of the query interface is in particular outdated currently). Note: We develop and test under Python 3; there are no plans for backwards compatibility with Python 2.
 
 A collection of tools for working with data from the black box - aimed at offline data analysis - can be found in our separate [`black-box-tools`](https://github.com/ropod-project/black-box-tools) repository. The `black_box_tools` Python package exposed there is also a dependency of the black box query interface.
 
@@ -23,7 +23,7 @@ Our black box design principles were initially introduced in
 
 A. Mitrevski, S. Thoduka, A. Ortega Sáinz, M. Schöbel, P. Nagel, P. G. Plöger, and E. Prassler, "Deploying Robots in Everyday Environments: Towards Dependable and Practical Robotic Systems," in 29th International Workshop on Principles of Diagnosis (DX), Warsaw, Poland, 2018
 
-which have however evolved in a few respects since that paper was published.
+which have, however, evolved in a few respects since that paper was published.
 
 ### Data Format
 
@@ -115,6 +115,7 @@ In order to deal with data that come from different sources (e.g. ROS, EtherCAT,
 Data from the black box can be retrieved through a Zyre-based query interface that listens to JSON messages and responds back with JSON messages. The following message types can be sent to the query interface:
 * variable query: returns a list of all variables logged on a particular black box (schema defined in [docs/messages/black-box-variable-query-schema.json](docs/messages/black-box-variable-query-schema.json))
 * data query: returns data corresponding to a set of variables in a given time interval (schema defined in [docs/messages/black-box-data-query-schema.json](docs/messages/black-box-data-query-schema.json))
+* latest data query: returns the latest datum corresponding to a set of variables
 
 ## Dependencies
 
@@ -133,6 +134,8 @@ Both Python components (the logger and the query interface) depend on the follow
 * The [`Pyre base communicator`](https://github.com/ropod-project/ropod_common/tree/master/pyropod/ropod/pyre_communicator) in `ropod_common`
 * `PyYAML`
 * `pymongo`
+* `rosnode`
+* `zmq`
 
 The logger additionally depends on:
 * `rospy`
