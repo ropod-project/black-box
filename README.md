@@ -115,7 +115,7 @@ In order to deal with data that come from different sources (e.g. ROS, EtherCAT,
 Data from the black box can be retrieved through a Zyre-based query interface that listens to JSON messages and responds back with JSON messages. The following message types can be sent to the query interface:
 * variable query: returns a list of all variables logged on a particular black box (schema defined in [docs/messages/black-box-variable-query-schema.json](docs/messages/black-box-variable-query-schema.json))
 * data query: returns data corresponding to a set of variables in a given time interval (schema defined in [docs/messages/black-box-data-query-schema.json](docs/messages/black-box-data-query-schema.json))
-* latest data query: returns the latest datum corresponding to a set of variables
+* latest data query: returns the latest datum corresponding to a set of variables (schema defined in [docs/messages/black-box-latest-data-query-schema.json](docs/messages/black-box-latest-data-query-schema.json))
 
 ## Dependencies
 
