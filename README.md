@@ -134,8 +134,9 @@ Both Python components (the logger and the query interface) depend on the follow
 * The [`Pyre base communicator`](https://github.com/ropod-project/ropod_common/tree/master/pyropod/ropod/pyre_communicator) in `ropod_common`
 * `PyYAML`
 * `pymongo`
-* `rosnode`
-* `zmq`
+* `rospkg`
+* `catkin-pkg`
+* `pyzmq`
 
 The logger additionally depends on:
 * `rospy`
